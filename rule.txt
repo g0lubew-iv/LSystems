@@ -1,0 +1,4 @@
+Variables: [0, 1]
+Constants: []
+Axiom: 0
+Rules: (1->11), (0->1A0)

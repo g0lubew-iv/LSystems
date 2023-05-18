@@ -1,0 +1,3 @@
+
+add_executable(l_systems_smoke_test smoke_test.cpp)
+target_link_libraries(l_systems_smoke_test l_systems)
