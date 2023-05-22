@@ -1,5 +1,0 @@
-# ninja log v5
-0	464	1684323327710011164	tests/CMakeFiles/l_systems_smoke_test.dir/smoke_test.cpp.o	abb3e1dd0454a89b
-0	627	1684323327873344499	CMakeFiles/l_systems.dir/src/lsystem.cpp.o	7126aa08f9fccd30
-627	654	1684323327900011166	libl_systems.a	c3e38402c9787aff
-654	708	1684323327953344500	tests/l_systems_smoke_test	e138e4febec77e94

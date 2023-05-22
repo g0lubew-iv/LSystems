@@ -1,57 +1,52 @@
 //
 // Created by one_eyed_john on 26/04/23.
 //
-#include <random>
+
 #include <lsystem/lsystem.hpp>
+#include <vector>
 
-LSystem::LSystem(const std::vector<char> &variables, const std::vector<char> &constants,
-                 const std::string &ax, const std::vector<Rule> &rs) :
-        vars_(variables), cons_(constants),
-        axiom_(ax), rules_(rs) {
-    ;
+void LSystem::SetAxiom(const std::string &axiom) {
+    this->axiom_ = axiom;
+    res_ = axiom;
 }
 
-bool LSystem::check_rules() {
-    int sum = 0;
-    for (const auto &rule: rules_) {
-        sum += rule.probability_;
+void LSystem::AddRule(char name, const std::string& rule) {
+    if (rules_.find(name) == rules_.end()) {
+        rules_.insert(std::pair<char, std::string>(name, rule));
     }
-    return sum == 1;
+    else {
+        rules_.find(name)->second = rule;
+    }
 }
 
-int get_random_number_from_0_to_1() {
-    using u32 = uint_least32_t;
-    using engine = std::mt19937;
-    std::random_device os_seed;
-    const u32 seed = os_seed();
-
-    engine generator(seed);
-    std::uniform_int_distribution<u32> distribute(0, 1);
-
-    return static_cast<int>(distribute(generator));
+void LSystem::SetNumberGenerations(unsigned int count) {
+    num_gen_ = count;
 }
 
-std::string LSystem::rule_out() {
-    if (check_rules()) {
-        int random_number = get_random_number_from_0_to_1();
-        int sum = 0;
+void LSystem::generate() {
+    for (int i = 0; i < num_gen_; i++) {
+        unsigned int offset = 0;
+        std::vector<size_t> position;
 
-        for (const auto &rule: rules_) {
-            sum += rule.probability_;
-            if (random_number < sum) {
-                return rule.to_;
+        for (auto begin = rules_.begin(); begin != rules_.end(); begin++) {
+            char sign = begin->first;
+            size_t pos = res_.find(sign, 0);
+
+            while (pos != std::string::npos) {
+                position.push_back(pos);
+                pos = res_.find(sign, pos + 1);
+            }
+
+            for (unsigned long j : position) {
+                std::string rule = rules_.find(sign)->second;
+                res_.replace(j + offset, 1, rule);
+                offset += rule.length() - 1;
             }
         }
-
     }
-
-    throw std::exception();
 }
 
-std::istream &LSystem::readFrom(std::istream &istrm) {
-
-}
-
-std::ostream &LSystem::writeTo(std::ostream &ostrm) const {
-
+std::string LSystem::GetString() {
+    generate();
+    return res_;
 }

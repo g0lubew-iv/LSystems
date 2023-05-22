@@ -5,44 +5,29 @@
 #ifndef L_SYSTEMS_LSYSTEM_HPP
 #define L_SYSTEMS_LSYSTEM_HPP
 
-#include <sstream>
-#include <vector>
+#include <string>
+#include <map>
 
 class LSystem {
 public:
-    struct Rule {
-        std::string from_;
-        std::string to_;
-        std::uint8_t probability_{1};
-    };
 
-public:
     LSystem() = default;
 
-    LSystem(const std::vector<char> &, const std::vector<char> &, const std::string &, const std::vector<Rule> &);
+    void SetAxiom(const std::string &);
 
-    std::istream& readFrom(std::istream&);
-    std::ostream& writeTo(std::ostream&) const;
+    void AddRule(char, const std::string &);
+
+    void SetNumberGenerations(unsigned int);
+
+    std::string GetString();
 
 private:
     std::string axiom_;
-    std::vector<Rule> rules_;
-    std::vector<char> vars_;
-    std::vector<char> cons_;
-    std::uint8_t generation_{0};
+    std::map<char, std::string> rules_ = {};
+    unsigned int num_gen_ = 0;
+    std::string res_;
 
-private:
-    bool check_rules();
-
-    std::string rule_out();
+    void generate();
 };
-
-inline std::ostream& operator<<(std::ostream& ostrm, const LSystem& rhs) {
-    return rhs.writeTo(ostrm);
-}
-
-inline std::istream& operator>>(std::istream& istrm, LSystem& rhs) {
-    return rhs.readFrom(istrm);
-}
 
 #endif //L_SYSTEMS_LSYSTEM_HPP

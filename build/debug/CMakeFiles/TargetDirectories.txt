@@ -1,6 +1,0 @@
-/home/one_eyed_john/dev/c_projects/l_systems/build/debug/CMakeFiles/l_systems.dir
-/home/one_eyed_john/dev/c_projects/l_systems/build/debug/CMakeFiles/edit_cache.dir
-/home/one_eyed_john/dev/c_projects/l_systems/build/debug/CMakeFiles/rebuild_cache.dir
-/home/one_eyed_john/dev/c_projects/l_systems/build/debug/tests/CMakeFiles/l_systems_smoke_test.dir
-/home/one_eyed_john/dev/c_projects/l_systems/build/debug/tests/CMakeFiles/edit_cache.dir
-/home/one_eyed_john/dev/c_projects/l_systems/build/debug/tests/CMakeFiles/rebuild_cache.dir
