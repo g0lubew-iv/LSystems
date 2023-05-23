@@ -11,14 +11,13 @@ int main() {
             {'F', "F+F-F-FF+F+F-F"}
     }, 2);
 
-    // auto renderer = Renderer(600, 600);
+    auto renderer = Renderer(600, 600);
     auto drawer = Drawer(l_system.GetString());
 
-    // drawer.SetRotationAngle(20.f);
-    // drawer.SetLineLength(2);
+    drawer.SetLineLength(2);
 
-    // drawer.Draw(renderer);
-    // renderer.Runtime();
+    drawer.Draw(renderer);
+    renderer.Runtime();
 
     return 0;
 }

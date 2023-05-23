@@ -9,9 +9,9 @@
 
 #include <iostream>
 
-Renderer::Renderer(int width, int height) {
+Renderer::Renderer(unsigned int width, unsigned int height) {
     if (!glfwInit()) {
-        std::cout << "failed to init glfw\n";
+        std::cout << "Failed to init GLFW!\n";
         std::terminate();
     }
 
@@ -22,66 +22,75 @@ Renderer::Renderer(int width, int height) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-    window_ = glfwCreateWindow(width, height, "LSystem", nullptr, nullptr);
+    window_ = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height),
+                               "LSystem", nullptr, nullptr);
 
     if (window_ == nullptr) {
-        std::cout << "failed to create window\n";
+        std::cout << "Failed to create window!\n";
         std::terminate();
     }
 
     glfwMakeContextCurrent(window_);
 
     if (!gladLoadGL()) {
-        std::cout << "failed to initialize glad\n";
+        std::cout << "Failed to initialize Glad!\n";
         std::terminate();
     }
-
-
 }
 
 Renderer::~Renderer() {
     glfwTerminate();
 }
 
-void Renderer::DrawLine(glm::vec2 begin, glm::vec2 end) {
-    lines.emplace_back(begin, end);
+void Renderer::AddLine(glm::vec2 begin, glm::vec2 end) {
+    lines_vector.emplace_back(begin, end);
 }
 
 void Renderer::render() {
-
+    // TODO: ALL!
 }
 
-void Renderer::Runtime() {
-    const double upd_ = 4;
-    const double fps_ = 4;
+void Renderer::Runtime(double upd, double fps) {
+
+    if ((upd <= 0) || (fps <= 0)) {
+        throw std::invalid_argument("UPD and FPS must be non-negative!");
+    }
+
+    const double upd_ = upd;
+    const double fps_ = fps;
 
     const double upd_rate_ = 1. / upd_;
     const double fps_rate_ = 1. / fps_;
 
-    double last_time, curr_time = glfwGetTime(),
+    double last_time,
+            curr_time = glfwGetTime(),
             upd_time_count = 0,
             fps_time_count = 0;
 
-    bool should_redraw = true;
+    bool should_redraw = true; // we have to draw figure at the first time
 
     while (!glfwWindowShouldClose(window_)) {
         last_time = curr_time;
         curr_time = glfwGetTime();
+
         auto duration = curr_time - last_time;
+
         upd_time_count += duration;
         fps_time_count += duration;
 
         if (should_redraw && fps_time_count >= fps_rate_) {
             fps_time_count -= fps_rate_;
             glClear(GL_COLOR_BUFFER_BIT);
-            this->render();
+            this->render(); // rendering!
             glfwSwapBuffers(window_);
             should_redraw = false;
         }
 
         while (upd_time_count >= upd_rate_) {
             upd_time_count -= upd_rate_;
-            if (!should_redraw) should_redraw = true;
+            if (!should_redraw) {
+                should_redraw = true;
+            }
             glfwPollEvents();
             // TODO: camera's movement
         }

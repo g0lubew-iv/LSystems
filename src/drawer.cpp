@@ -21,7 +21,7 @@ void Drawer::move(Renderer &render) {
                        site_1.y_ - std::cos(site_1.angle_) * static_cast<float>(line_len_),
                        site_1.angle_);
 
-    render.DrawLine(glm::vec2(site_1.x_, site_1.y_), glm::vec2(site_2.x_, site_2.y_));
+    render.AddLine(glm::vec2(site_1.x_, site_1.y_), glm::vec2(site_2.x_, site_2.y_));
 
     nodes_stack.pop();
     nodes_stack.push(site_2);

@@ -103,7 +103,7 @@ public:
     void Draw(Renderer &render);
 
     /**
-     * \brief Set up new length of the lines (default is 5)
+     * \brief Set up new length of the lines_vector (default is 5)
      * \param line_length
      */
     void SetLineLength(unsigned int line_length);

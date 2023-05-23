@@ -9,8 +9,7 @@
 #include <map>
 
 /**
- * \brief A class for of LSystem,
- * contains rules, axiom and number of generations
+ * \brief A class for LSystem, contains rules, axiom and number of generations
  * \param axiom
  * \param list_rules
  * \param number_generations
