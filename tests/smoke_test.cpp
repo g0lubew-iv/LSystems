@@ -8,42 +8,23 @@
 #include <lsystem/drawer.hpp>
 #include <lsystem/renderer.hpp>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-const char *vertex_shader_source =
-        "#version 330 core\n"
-        "layout (location = 0) in vec2 position;\n"
-        "void main() {\n"
-        "   gl_Position = vec4(position, 0, 1);\n"
-        "}\0";
-
-const char *fragment_shader_source =
-        "#version 330 core\n"
-        "out vec4 color;\n"
-        "void main() {\n"
-        "   color = vec4(1, 0.8, 0.1, 1);\n"
-        "}\n\0";
-
-struct Vertex {
-    float x;
-    float y;
-};
-
 int main() {
-    auto l_s = LSystem();
-    l_s.SetAxiom("0");
-    l_s.AddRule('1', "11");
-    l_s.AddRule('0', "1A0");
+    auto l_system = LSystem("F+F+F+F", {
+            {'F', "F+F-F-FF+F+F-F"}
+    }, 2);
 
-    auto renderer = Renderer(600, 600);
+    // auto renderer = Renderer(600, 600);
     auto drawer = Drawer();
 
-    drawer.SetLSystem(l_s);
+    drawer.SetLSystem(l_system);
+    drawer.SetRotationAngle(20.f);
     drawer.SetLineLength(2);
-    drawer.Draw(renderer);
 
-    renderer.Runtime();
+    // drawer.Draw(renderer);
+    // renderer.Runtime();
+
+    l_system.SetNumberGenerations(3);
+    std::cout << l_system.GetString();
 
     return 0;
 }

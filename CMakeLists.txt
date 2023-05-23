@@ -37,10 +37,10 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(l_systems PUBLIC OpenGL::GL)
 
 find_package(glfw3 REQUIRED)
-target_link_libraries(l_systems PUBLIC glfw3)
+target_link_libraries(l_systems PUBLIC glfw)
 
 find_package(glad REQUIRED)
-target_link_libraries(l_systems PUBLIC glad)
+target_link_libraries(l_systems PUBLIC glad::glad)
 
 find_package(glm REQUIRED)
 target_link_libraries(l_systems PUBLIC glm::glm)

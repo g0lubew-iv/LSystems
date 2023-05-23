@@ -5,48 +5,55 @@
 #include <lsystem/lsystem.hpp>
 #include <vector>
 
-void LSystem::SetAxiom(const std::string &axiom) {
-    this->axiom_ = axiom;
-    res_ = axiom;
+LSystem::LSystem(const std::string &axiom, std::initializer_list<Rule> list_rules, unsigned int number_generations)
+        : axiom_(axiom), res_(axiom) {
+
+    for (const auto &rule: list_rules) {
+        char name = rule.first;
+        std::string rule_sense = rule.second;
+
+        if (rules_.find(name) != rules_.end()) {
+            rules_.find(name)->second = rule_sense;
+        } else {
+            rules_.insert(LSystem::Rule(name, rule_sense));
+        }
+    }
+
+    SetNumberGenerations(number_generations);
 }
 
-void LSystem::AddRule(char name, const std::string& rule) {
-    if (rules_.find(name) == rules_.end()) {
-        rules_.insert(std::pair<char, std::string>(name, rule));
-    }
-    else {
-        rules_.find(name)->second = rule;
-    }
-}
-
-void LSystem::SetNumberGenerations(unsigned int count) {
-    num_gen_ = count;
+void LSystem::SetNumberGenerations(unsigned int num_gen) {
+    num_gen_ = num_gen;
 }
 
 void LSystem::generate() {
     for (int i = 0; i < num_gen_; i++) {
-        unsigned int offset = 0;
-        std::vector<size_t> position;
+        std::vector<size_t> position_vector;
+        for (const auto &rule: rules_) {
 
-        for (auto begin = rules_.begin(); begin != rules_.end(); begin++) {
-            char sign = begin->first;
-            size_t pos = res_.find(sign, 0);
+            unsigned int shift = 0; // offset by the length of rule
+            char name = rule.first;
+            std::string rule_sense = rule.second;
+            size_t position = res_.find(name, 0); // first encounter of element in string
 
-            while (pos != std::string::npos) {
-                position.push_back(pos);
-                pos = res_.find(sign, pos + 1);
+            while (position != std::string::npos) {
+                // While we have this name of rule in res_
+                position_vector.push_back(position);
+                position = res_.find(name, position + 1);
             }
 
-            for (unsigned long j : position) {
-                std::string rule = rules_.find(sign)->second;
-                res_.replace(j + offset, 1, rule);
-                offset += rule.length() - 1;
+            // std::sort(position_vector.begin(), position_vector.end()); non-useful, but it can help for debug
+
+            for (unsigned long j: position_vector) {
+                res_.replace(j + shift, 1, rule_sense);
+                shift += rule_sense.length() - 1;
             }
         }
     }
 }
 
 std::string LSystem::GetString() {
+    res_ = axiom_; // annul previous generations!
     generate();
     return res_;
 }
