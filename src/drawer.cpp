@@ -2,9 +2,12 @@
 
 #include <numbers>
 #include <cmath>
+#include <utility>
 
-Drawer::Drawer(unsigned int lineLength, float angle, unsigned int width, unsigned int height) :
-        line_len_(lineLength), rot_angle_(angle), width_(width), height_(height) {
+Drawer::Drawer(std::string l_system_string, unsigned int line_length, float rotation_angle, unsigned int width,
+               unsigned int height) :
+        system_out_(std::move(l_system_string)), line_len_(line_length), rot_angle_(rotation_angle), width_(width),
+        height_(height) {
     start();
 }
 
