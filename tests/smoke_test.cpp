@@ -7,19 +7,15 @@
 #include <lsystem/renderer.hpp>
 #include <lsystem/reader.hpp>
 
-#include <iostream>
+
+std::string current_path = "/home/one_eyed_john/dev/c_projects/l_systems";
 
 int main() {
 
     Reader r;
-    r.ReadFromConsole();
+    r.ReadFromFile(current_path + "/rules.txt");
 
-//    auto l_system = LSystem("F+F+F+F", {
-//            {'F', "F+F-F-FF+F+F-F"}
-//    }, 2);
-
-    // Vector to initializer_list (yet in the Reader?)
-    LSystem l_system = LSystem(r.axiom_, r.vector_rules_, r.num_gen_);
+    auto l_system = LSystem(r.axiom_, r.vector_rules_, r.num_gen_);
 
     auto renderer = Renderer(r.width_, r.height_);
     auto drawer = Drawer(l_system.GetString());

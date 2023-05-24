@@ -39,6 +39,14 @@ public:
     /// @brief Terminate GLFW
     ~Renderer();
 
+    Renderer(const Renderer &other) = default;
+
+    Renderer &operator=(const Renderer &other) = default;
+
+    Renderer(Renderer &&other) noexcept = default;
+
+    Renderer &operator=(Renderer &&other) noexcept = default;
+
     /**
      * \brief Emplace a Line into back of lines vector
      * \param begin The first point (Node)
@@ -63,7 +71,7 @@ private:
     std::vector<Line> lines_vector = {};
 
     /// @brief GLFW: object of window
-    GLFWwindow* window_;
+    GLFWwindow *window_;
 };
 
 #endif //L_SYSTEMS_RENDERER_HPP

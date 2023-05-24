@@ -18,7 +18,7 @@
 class LSystem {
 public:
     /// @brief Rule contains 2 elements: name of variable over which
-    /// it will be performed, and formula, rule itself
+    /// it will be performed and formula itself
     /// E. g. rule (F -> F[+FF][-FF]F[-F][+F]F) equals <'F', "F[+FF][-FF]F[-F][+F]F">
     using Rule = std::pair<char, std::string>;
 
@@ -56,17 +56,18 @@ public:
      */
     LSystem(const std::string &axiom, std::initializer_list<Rule> list_rules, unsigned int number_generations);
 
-    LSystem(const std::string &axiom, const std::vector<Rule>& vector_rules, unsigned int number_generations);
+    /// @brief The same as LSystem constructor for std::initializer_list<Rule>
+    LSystem(const std::string &axiom, const std::vector<Rule> &vector_rules, unsigned int number_generations);
 
     ~LSystem() = default;
 
-    LSystem(const LSystem &) = default;
+    LSystem(const LSystem &other) = default;
 
-    LSystem &operator=(const LSystem &) = default;
+    LSystem &operator=(const LSystem &other) = default;
 
-    LSystem(LSystem &&) noexcept = default;
+    LSystem(LSystem &&other) noexcept = default;
 
-    LSystem &operator=(LSystem &&) noexcept = default;
+    LSystem &operator=(LSystem &&other) noexcept = default;
 
     /**
      * \brief Change number of generations: the volume of res_ variable will change accordingly

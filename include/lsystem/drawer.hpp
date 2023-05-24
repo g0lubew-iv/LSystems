@@ -93,8 +93,18 @@ public:
      * \param width The width_ of window; default is 500
      * \param height The height_ of window; default is 500
      */
-    explicit Drawer(std::string  l_system_string, unsigned int line_length = 5, float rotation_angle = 0,
+    explicit Drawer(std::string l_system_string, unsigned int line_length = 5, float rotation_angle = 0,
                     unsigned int width = 500, unsigned int height = 500);
+
+    ~Drawer() = default;
+
+    Drawer(const Drawer &other) = default;
+
+    Drawer &operator=(const Drawer &other) = default;
+
+    Drawer(Drawer &&other) noexcept = default;
+
+    Drawer &operator=(Drawer &&other) noexcept = default;
 
     /**
      * \brief Processes the string and makes OpenGL work: draws a segment (line) between top and new nodes
