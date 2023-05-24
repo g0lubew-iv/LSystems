@@ -8,6 +8,7 @@ set(L_SYSTEMS_PUBLIC_HEADERS
         include/lsystem/lsystem.hpp
         include/lsystem/drawer.hpp
         include/lsystem/renderer.hpp
+        include/lsystem/reader.hpp
         )
 
 set(L_SYSTEMS_SOURCES
@@ -15,6 +16,7 @@ set(L_SYSTEMS_SOURCES
         src/lsystem.cpp
         src/drawer.cpp
         src/renderer.cpp
+        src/reader.cpp
         )
 
 target_sources(l_systems PRIVATE ${L_SYSTEMS_SOURCES})

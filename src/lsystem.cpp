@@ -22,6 +22,23 @@ LSystem::LSystem(const std::string &axiom, std::initializer_list<Rule> list_rule
     SetNumberGenerations(number_generations);
 }
 
+LSystem::LSystem(const std::string &axiom, const std::vector<Rule> &vector_rules, unsigned int number_generations)
+        : axiom_(axiom), res_(axiom) {
+
+    for (const auto &rule: vector_rules) {
+        char name = rule.first;
+        std::string rule_sense = rule.second;
+
+        if (rules_.find(name) != rules_.end()) {
+            rules_.find(name)->second = rule_sense;
+        } else {
+            rules_.insert(LSystem::Rule(name, rule_sense));
+        }
+    }
+
+    SetNumberGenerations(number_generations);
+}
+
 void LSystem::SetNumberGenerations(unsigned int num_gen) {
     num_gen_ = num_gen;
 }

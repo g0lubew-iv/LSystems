@@ -1,0 +1,3 @@
+Axiom: F+F+F+F
+Rules: (F->F+F-F-FF+F+F-F, )
+Number of generations: 2

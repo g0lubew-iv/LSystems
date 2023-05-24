@@ -13,15 +13,15 @@ struct GLFWwindow; // just for declaration: GLFWwindow* window_
 /**
  * \brief A class for working with OpenGL and rendering LSystems,
  *
- * \param width The width of window; default is 500
- * \param height The height of window; default is 500
+ * \param width The width_ of window; default is 500
+ * \param height The height_ of window; default is 500
  */
 class Renderer {
 public:
     /**
      * \brief A struct that defines each line of system
-     * \param width The width of window; default is 500
-     * \param height The height of window; default is 500
+     * \param width The width_ of window; default is 500
+     * \param height The height_ of window; default is 500
      */
     struct Line {
         glm::vec2 begin = {0, 0};
@@ -31,8 +31,8 @@ public:
 public:
     /**
      * \brief Initialize all processes: setting up GLFW window, making current context, loading GL
-     * \param width The width of window; default is 500
-     * \param height The height of window; default is 500
+     * \param width The width_ of window; default is 500
+     * \param height The height_ of window; default is 500
      */
     explicit Renderer(unsigned int width = 500, unsigned int height = 500);
 

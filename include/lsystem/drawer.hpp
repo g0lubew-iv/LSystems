@@ -90,8 +90,8 @@ public:
      * \param l_system_string The out string of LSystem
      * \param line_length The length of segment connecting two nodes; default is 5
      * \param rotation_angle The angle of rotation (relative to the vertical); default is 0
-     * \param width The width of window; default is 500
-     * \param height The height of window; default is 500
+     * \param width The width_ of window; default is 500
+     * \param height The height_ of window; default is 500
      */
     explicit Drawer(std::string  l_system_string, unsigned int line_length = 5, float rotation_angle = 0,
                     unsigned int width = 500, unsigned int height = 500);
