@@ -39,10 +39,9 @@ struct Reader {
 
     /**
      * \brief Reading and editing data from file with rules; syntax of rules: Variable -> Rule body;
-     * N. B: new rule is written from new line
-     * \param file_path Absolute path to need file
+     * N. B: new rule is written from new line, you have to give absolute path to file
      */
-    void ReadFromFile(const std::string &file_path);
+    void ReadFromFile();
 };
 
 #endif //L_SYSTEMS_READER_HPP

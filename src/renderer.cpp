@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+const int Renderer::vertex_byte_size_ = sizeof(glm::vec2);
+
 Renderer::Renderer(unsigned int width, unsigned int height) {
     if (!glfwInit()) {
         std::cout << "Failed to init GLFW!\n";
@@ -36,18 +38,45 @@ Renderer::Renderer(unsigned int width, unsigned int height) {
         std::cout << "Failed to initialize Glad!\n";
         std::terminate();
     }
+
+    glCreateBuffers(1, &buffer_);
+    glCreateVertexArrays(1, &vertex_array_);
+    glVertexArrayVertexBuffer(vertex_array_, 0, buffer_, 0, vertex_byte_size_);
+    glEnableVertexArrayAttrib(vertex_array_, 0);
+    glVertexArrayAttribFormat(vertex_array_, 0, 2, GL_FLOAT, false, 0);
+    glVertexArrayAttribBinding(vertex_array_, 0, 0);
+
 }
 
 Renderer::~Renderer() {
+    glDeleteVertexArrays(1, &vertex_array_);
+    glDeleteBuffers(1, &buffer_);
+
     glfwTerminate();
 }
 
 void Renderer::AddLine(glm::vec2 begin, glm::vec2 end) {
-    lines_vector.emplace_back(begin, end);
+    lines_vector_.emplace_back(begin, end);
 }
 
 void Renderer::render() {
-    // TODO: ALL!
+    for (auto l: lines_vector_) {
+        std::cout << l.begin.x << " " << l.begin.y << "; " << l.end.x << " " << l.end.y << "\n";
+    }
+
+    auto vertices_count = static_cast<int>(lines_vector_.size() * 2); // Number of all vertices
+    glNamedBufferData(buffer_, vertices_count * vertex_byte_size_, nullptr, GL_DYNAMIC_DRAW);
+
+    auto *mapped_ptr = reinterpret_cast<glm::vec2 *>(glMapNamedBuffer(buffer_, GL_WRITE_ONLY));
+    for (int i = 0; i < lines_vector_.size(); i += 1) {
+        mapped_ptr[i] = lines_vector_[i].begin;
+    }
+    for (int j = 0; j < lines_vector_.size(); j += 1) {
+        mapped_ptr[lines_vector_.size() + j] = lines_vector_[j].end;
+    }
+    glUnmapNamedBuffer(buffer_);
+    glBindVertexArray(vertex_array_);
+    glDrawArrays(GL_LINE_STRIP, 0, vertices_count);
 }
 
 void Renderer::Runtime(double upd, double fps) {
@@ -81,7 +110,9 @@ void Renderer::Runtime(double upd, double fps) {
         if (should_redraw && fps_time_count >= fps_rate_) {
             fps_time_count -= fps_rate_;
             glClear(GL_COLOR_BUFFER_BIT);
+
             this->render(); // rendering!
+
             glfwSwapBuffers(window_);
             should_redraw = false;
         }

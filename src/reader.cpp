@@ -56,15 +56,33 @@ void Reader::ReadFromConsole() {
     }
 }
 
-void Reader::ReadFromFile(const std::string &file_path) {
+void Reader::ReadFromFile() {
+    std::cout << "Enter absolute path to file: ";
+    std::string file_path;
+    std::cin >> file_path;
+
     std::string line;
     std::ifstream file(file_path);
 
     bool is_axiom = true; // the first line after number of generations
 
     if (file.is_open()) {
-        file >> num_gen_; // and there was empty line, so...
-        getline(file, line); // ... we are getting rid of it
+
+        file >> width_ >> height_;
+
+        if ((width_ <= 0) || (height_ <= 0)) {
+            // Check if window parameters are positive, rectangle must be non-degenerate
+            throw std::invalid_argument("Width and height_ must be positive!");
+        }
+
+        file >> num_gen_;
+
+        if (num_gen_ < 0) {
+            // Check if number of generations is non-negative, then cast to unsigned int
+            throw std::invalid_argument("Number of generation must be non-negative!");
+        }
+
+        getline(file, line); // and if the empty string is here, we will get rid of it
 
         while (getline(file, line)) {
             if (is_axiom) {

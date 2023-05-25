@@ -7,13 +7,10 @@
 #include <lsystem/renderer.hpp>
 #include <lsystem/reader.hpp>
 
-
-std::string current_path = "/home/one_eyed_john/dev/c_projects/l_systems";
-
 int main() {
 
     Reader r;
-    r.ReadFromFile(current_path + "/rules.txt");
+    r.ReadFromFile();
 
     auto l_system = LSystem(r.axiom_, r.vector_rules_, r.num_gen_);
 

@@ -39,13 +39,13 @@ public:
     /// @brief Terminate GLFW
     ~Renderer();
 
-    Renderer(const Renderer &other) = default;
+    Renderer(const Renderer &other) = delete;
 
-    Renderer &operator=(const Renderer &other) = default;
+    Renderer &operator=(const Renderer &other) = delete;
 
-    Renderer(Renderer &&other) noexcept = default;
+    Renderer(Renderer &&other) noexcept = delete;
 
-    Renderer &operator=(Renderer &&other) noexcept = default;
+    Renderer &operator=(Renderer &&other) noexcept = delete;
 
     /**
      * \brief Emplace a Line into back of lines vector
@@ -67,8 +67,14 @@ public:
     void Runtime(double upd = 4., double fps = 4.);
 
 private:
+
+    static const int vertex_byte_size_;
+
+    unsigned int buffer_ = 0;
+    unsigned int vertex_array_ = 0;
+
     /// @brief Vector of Lines
-    std::vector<Line> lines_vector = {};
+    std::vector<Line> lines_vector_ = {};
 
     /// @brief GLFW: object of window
     GLFWwindow *window_;
