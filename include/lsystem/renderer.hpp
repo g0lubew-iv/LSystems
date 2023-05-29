@@ -6,6 +6,7 @@
 #define L_SYSTEMS_RENDERER_HPP
 
 #include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
 #include <vector>
 
 struct GLFWwindow; // just for declaration: GLFWwindow* window_
@@ -55,11 +56,6 @@ public:
     void AddLine(glm::vec2 begin, glm::vec2 end);
 
     /**
-     * \brief ?
-     */
-    void render();
-
-    /**
      * \brief Running a program with loaded UPD and FPS
      * \param upd (default is 4)
      * \param fps (default is 4)
@@ -72,12 +68,24 @@ private:
 
     unsigned int buffer_ = 0;
     unsigned int vertex_array_ = 0;
+    unsigned int program_ = 0;
+
+    int projection_loc_ = 0;
+
+    glm::mat4 view_{1.f}; // Единичная
+    glm::mat4 projection_;
 
     /// @brief Vector of Lines
     std::vector<Line> lines_vector_ = {};
 
     /// @brief GLFW: object of window
     GLFWwindow *window_;
+
+    bool dirt = false;
+
+    void rebuild();
+
+    void render();
 };
 
 #endif //L_SYSTEMS_RENDERER_HPP

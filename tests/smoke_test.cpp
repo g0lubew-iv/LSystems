@@ -14,8 +14,8 @@ int main() {
 
     auto l_system = LSystem(r.axiom_, r.vector_rules_, r.num_gen_);
 
-    auto renderer = Renderer(r.width_, r.height_);
     auto drawer = Drawer(l_system.GetString());
+    auto renderer = Renderer(r.width_, r.height_);
 
     drawer.SetLineLength(2);
 
