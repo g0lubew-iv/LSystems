@@ -3,9 +3,7 @@
 //
 
 #include <lsystem/lsystem.hpp>
-#include <lsystem/drawer.hpp>
 #include <lsystem/renderer.hpp>
-#include <lsystem/reader.hpp>
 
 int main() {
 

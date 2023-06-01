@@ -109,8 +109,7 @@ void glDebugOutput(GLenum source,
 }
 
 std::string load_shader_source(const std::filesystem::path &file_name) {
-    // TODO: if it's executable, than we have another path!
-    auto path = "../shaders" / file_name;
+    auto path = "./shaders" / file_name;
     auto file = std::ifstream(path);
     std::string source, line;
     while (file.good()) {
@@ -187,7 +186,7 @@ Renderer::Renderer(unsigned int window_width, unsigned int window_height) {
         std::terminate();
     }
 
-        glfwMakeContextCurrent(window_);
+    glfwMakeContextCurrent(window_);
 
     if (!gladLoadGL()) {
         std::cout << "Failed to initialize Glad!\n";

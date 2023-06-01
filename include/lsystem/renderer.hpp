@@ -9,7 +9,7 @@
 #include <glm/mat4x4.hpp>
 #include <vector>
 
-struct GLFWwindow; // just for declaration: GLFWwindow* window_
+struct GLFWwindow; // just for declaration: GLFWwindow *window_
 
 /**
  * \brief A class for working with OpenGL and rendering LSystems,
@@ -78,7 +78,7 @@ private:
 
     void render();
 
-    void input(GLFWwindow* window);
+    void input(GLFWwindow *window);
 
     void update(double duration);
 };
