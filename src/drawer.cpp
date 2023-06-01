@@ -4,93 +4,62 @@
 #include <cmath>
 #include <utility>
 
-Drawer::Drawer(std::string l_system_string, unsigned int line_length, float rotation_angle, unsigned int width,
-               unsigned int height) :
-        system_out_(std::move(l_system_string)), line_len_(line_length), rot_angle_(rotation_angle), width_(width),
-        height_(height) {
-    start();
+Drawer::Drawer(std::string l_system_string, double line_length, double rotation_angle) :
+        l_system_(std::move(l_system_string)), line_length_(line_length), rotation_angle_(rotation_angle) {
 }
 
-void Drawer::start() {
-    nodes_stack.emplace(width_, height_, 0);
-}
+void Drawer::move_node(Renderer &render, bool should_draw) {
+    auto site_1 = nodes_stack.top();
+    auto site_2 = Node{
+            glm::vec2{
+                    site_1.point.x + std::sin(site_1.angle) * line_length_,
+                    site_1.point.y - std::cos(site_1.angle) * line_length_,
+            },
+            site_1.angle
+    };
 
-void Drawer::move(Renderer &render) {
-    Node site_1 = nodes_stack.top();
-    Node site_2 = Node(site_1.x_ + std::sin(site_1.angle_) * static_cast<float>(line_len_),
-                       site_1.y_ - std::cos(site_1.angle_) * static_cast<float>(line_len_),
-                       site_1.angle_);
-
-    render.AddLine(glm::vec2(site_1.x_, site_1.y_), glm::vec2(site_2.x_, site_2.y_));
+    if (should_draw) {
+        render.AddLine(site_1.point, site_2.point);
+    }
 
     nodes_stack.pop();
     nodes_stack.push(site_2);
 }
 
-void Drawer::move_without_drawing() {
-    // Like the move() function, but without call of Renderer
-    Node site_1 = nodes_stack.top();
-    Node site_2 = Node(site_1.x_ + std::sin(site_1.angle_) * static_cast<float>(line_len_),
-                       site_1.y_ - std::cos(site_1.angle_) * static_cast<float>(line_len_),
-                       site_1.angle_);
-
-    nodes_stack.pop();
-    nodes_stack.push(site_2);
-}
-
-void Drawer::turn_right() {
-    nodes_stack.top().angle_ += (std::numbers::pi_v<float> * rot_angle_) / 180.f;
-}
-
-void Drawer::turn_left() {
-    nodes_stack.top().angle_ -= (std::numbers::pi_v<float> * rot_angle_) / 180.f;
-}
-
-void Drawer::push() {
-    nodes_stack.push(nodes_stack.top());
-}
-
-void Drawer::pop() {
-    nodes_stack.pop();
-}
-
-void Drawer::SetLineLength(unsigned int length) {
-    line_len_ = length;
-}
-
-void Drawer::SetRotationAngle(float angle) {
-    rot_angle_ = angle;
+void Drawer::turn_node(bool direction) {
+    auto val = (std::numbers::pi * rotation_angle_) / 180.;
+    if (direction) { // right
+        nodes_stack.top().angle += val;
+    } else { // left
+        nodes_stack.top().angle -= val;
+    }
 }
 
 void Drawer::Draw(Renderer &render) {
-    for (char command_letter: system_out_) {
+    nodes_stack.emplace(glm::dvec2{0., 0.}, 0.);
+    for (char command_letter: l_system_) {
         // See README.md with a commands list
         switch (command_letter) {
             case 'F':
-                move(render);
+                move_node(render);
                 break;
             case 'f':
-                move_without_drawing();
+                move_node(render, false);
                 break;
             case '+':
-                turn_left();
+                turn_node(false);
                 break;
             case '-':
-                turn_right();
+                turn_node(true);
                 break;
-//            case '|':
-                // TODO: reverse on 180 degrees?
-//                turn_right();
-//                break;
             case '[':
-                push();
+                nodes_stack.push(nodes_stack.top());
                 break;
             case ']':
-                pop();
+                nodes_stack.pop();
                 break;
             default:
                 break;
         }
     }
-    start();
 }

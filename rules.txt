@@ -1,4 +1,0 @@
-600 600 2
-F+F+F+F
-F->F+F-F-FF+F+F-F
-A -> F+-+-F++F   F F+

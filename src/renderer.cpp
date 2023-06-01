@@ -9,62 +9,146 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
 
 const int Renderer::vertex_byte_size_ = sizeof(glm::vec2);
 
-std::string load_shader_source(const std::filesystem::path& name) {
-    auto path = "./shaders" / name;
+void glDebugOutput(GLenum source,
+                   GLenum type,
+                   GLuint id,
+                   GLenum severity,
+                   GLsizei,
+                   const GLchar *message,
+                   const void *
+) {
+    if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
+        return;
+
+    std::cout << "---------------\n";
+    std::cout << "Debug message (" << id << "): " << message << '\n';
+
+    std::cout << "Source: ";
+    switch (source) {
+        case GL_DEBUG_SOURCE_API:
+            std::cout << "API";
+            break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            std::cout << "Window System";
+            break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            std::cout << "Shader Compiler";
+            break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            std::cout << "Third Party";
+            break;
+        case GL_DEBUG_SOURCE_APPLICATION:
+            std::cout << "Application";
+            break;
+        case GL_DEBUG_SOURCE_OTHER:
+            std::cout << "Other";
+            break;
+        default:
+            std::cout << "Unknown";
+    }
+    std::cout << '\n';
+
+    std::cout << "Type: ";
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:
+            std::cout << "Error";
+            break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            std::cout << "Deprecated Behaviour";
+            break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            std::cout << "Undefined Behaviour";
+            break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            std::cout << "Portability";
+            break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            std::cout << "Performance";
+            break;
+        case GL_DEBUG_TYPE_MARKER:
+            std::cout << "Marker";
+            break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:
+            std::cout << "Push Group";
+            break;
+        case GL_DEBUG_TYPE_POP_GROUP:
+            std::cout << "Pop Group";
+            break;
+        case GL_DEBUG_TYPE_OTHER:
+            std::cout << "Other";
+            break;
+        default:
+            std::cout << "Unknown";
+    }
+    std::cout << '\n';
+
+    std::cout << "Severity: ";
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_HIGH:
+            std::cout << "High";
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            std::cout << "Medium";
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            std::cout << "Low";
+            break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            std::cout << "Notification";
+            break;
+        default:
+            std::cout << "Unknown";
+    }
+    std::cout << '\n' << std::endl;
+}
+
+std::string load_shader_source(const std::filesystem::path &file_name) {
+    // TODO: if it's executable, than we have another path!
+    auto path = "../shaders" / file_name;
     auto file = std::ifstream(path);
-    std::string line;
-    std::string source;
+    std::string source, line;
     while (file.good()) {
         std::getline(file, line);
         source += line;
         source += '\n';
     }
-    std::cout << "shader source: " << source << '\n';
     return source;
 }
 
-unsigned int make_shader(GLenum shader_type, const std::filesystem::path& shader_path) {
-    auto shader_source = load_shader_source(shader_path);
-    auto shader_source_data = shader_source.c_str();
-
-    unsigned int shader = glCreateShader(shader_type);
-    glShaderSource(shader, 1, &shader_source_data, nullptr);
+unsigned int make_shader(GLenum type, const std::filesystem::path &file_name) {
+    auto source = load_shader_source(file_name);
+    unsigned int shader = glCreateShader(type);
+    const char *data = source.c_str();
+    glShaderSource(shader, 1, &data, nullptr);
     glCompileShader(shader);
-
     int success;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
         char info_log[512];
         glGetShaderInfoLog(shader, 512, nullptr, info_log);
         std::cout << "failed to compile shader\n";
-        std::cout << "\tfile: " << shader_path << '\n';
+        std::cout << "\tfile: " << file_name << '\n';
         std::cout << "\tlog: " << info_log << '\n';
         throw std::runtime_error("failed to compile shader");
     }
-
     return shader;
 }
 
 unsigned int make_program(
-        const std::filesystem::path& vertex_shader_path,
-        const std::filesystem::path& fragment_shader_path) {
-
-    auto vertex_shader = make_shader(GL_VERTEX_SHADER, vertex_shader_path);
-    auto fragment_shader = make_shader(GL_FRAGMENT_SHADER, fragment_shader_path);
-
+        const std::filesystem::path &vert_file_name,
+        const std::filesystem::path &frag_file_name) {
+    auto vertex_shader = make_shader(GL_VERTEX_SHADER, vert_file_name);
+    auto fragment_shader = make_shader(GL_FRAGMENT_SHADER, frag_file_name);
     auto program = glCreateProgram();
-
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
-
     glLinkProgram(program);
-
     int success;
     glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (!success) {
@@ -74,17 +158,14 @@ unsigned int make_program(
         std::cout << "\tlog: " << info_log << '\n';
         throw std::runtime_error("failed to link program");
     }
-
     glDetachShader(program, vertex_shader);
     glDetachShader(program, fragment_shader);
-
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
-
     return program;
 }
 
-Renderer::Renderer(unsigned int width, unsigned int height) {
+Renderer::Renderer(unsigned int window_width, unsigned int window_height) {
     if (!glfwInit()) {
         std::cout << "Failed to init GLFW!\n";
         std::terminate();
@@ -96,116 +177,147 @@ Renderer::Renderer(unsigned int width, unsigned int height) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-    window_ = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height),
-                               "LSystem", nullptr, nullptr);
+    window_ = glfwCreateWindow(static_cast<int>(window_width), static_cast<int>(window_height),
+                               "LSystems", nullptr, nullptr);
 
     if (window_ == nullptr) {
         std::cout << "Failed to create window!\n";
         std::terminate();
     }
 
-    glfwMakeContextCurrent(window_);
+        glfwMakeContextCurrent(window_);
 
     if (!gladLoadGL()) {
         std::cout << "Failed to initialize Glad!\n";
         std::terminate();
     }
 
-    program_ = make_program("simple.vert", "simple.frag");
-    projection_loc_ = glGetUniformLocation(program_, "projection");
+    GLint flags;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        std::cout << "OpenGL debug enabled\n";
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(glDebugOutput, nullptr);
+    }
 
-    projection_ = glm::ortho(0.f, 0.f, static_cast<float>(width), static_cast<float>(height));
+    program_ = make_program("vert.glsl", "frag.glsl");
+    glUseProgram(program_);
 
-    glCreateBuffers(1, &buffer_);
+    color_location_ = glGetUniformLocation(program_, "color");
+    glUniform3f(color_location_, 1, 0, 0);
+
+    matrix_location_ = glGetUniformLocation(program_, "matrix");
+    projection_ = glm::ortho(-static_cast<float>(window_width) / 2, static_cast<float>(window_width) / 2,
+                             -static_cast<float>(window_height) / 2, static_cast<float>(window_height) / 2);
+
+    glCreateBuffers(1, &vertex_buffer_);
+    glNamedBufferData(vertex_buffer_,
+                      static_cast<int>(vertices_.size() * vertex_byte_size_),
+                      vertices_.data(), GL_STATIC_DRAW);
+
     glCreateVertexArrays(1, &vertex_array_);
-    glVertexArrayVertexBuffer(vertex_array_, 0, buffer_, 0, vertex_byte_size_);
+    // attach buffer
+    glVertexArrayVertexBuffer(vertex_array_, 0, vertex_buffer_, 0, vertex_byte_size_);
+    // configure vertex attributes
     glEnableVertexArrayAttrib(vertex_array_, 0);
     glVertexArrayAttribFormat(vertex_array_, 0, 2, GL_FLOAT, false, 0);
     glVertexArrayAttribBinding(vertex_array_, 0, 0);
 }
 
 Renderer::~Renderer() {
+    glDeleteProgram(program_);
     glDeleteVertexArrays(1, &vertex_array_);
-    glDeleteBuffers(1, &buffer_);
+    glDeleteBuffers(1, &vertex_buffer_);
 
     glfwTerminate();
 }
 
 void Renderer::AddLine(glm::vec2 begin, glm::vec2 end) {
-    lines_vector_.emplace_back(begin, end);
-    dirt = true;
-}
-
-void Renderer::rebuild() {
-    auto vertices_count = static_cast<int>(lines_vector_.size() * 2); // Number of all vertices
-    // резервация памяти
-    glNamedBufferData(buffer_, vertices_count * vertex_byte_size_, nullptr, GL_DYNAMIC_DRAW);
-    auto *mapped_ptr = reinterpret_cast<glm::vec2 *>(glMapNamedBuffer(buffer_, GL_WRITE_ONLY));
-    for (int i = 0; i < lines_vector_.size(); i += 2) {
-        *reinterpret_cast<Line*>(mapped_ptr + i) = lines_vector_[i];
-    }
-    glUnmapNamedBuffer(buffer_);
+    vertices_.push_back(begin);
+    vertices_.push_back(end);
 }
 
 void Renderer::render() {
-    if (dirt) {
-        dirt = false;
-        rebuild();
-    }
-
-    auto vertices_count = static_cast<int>(lines_vector_.size() * 2); // Number of all vertices
-    glBindVertexArray(vertex_array_);
+    auto matrix = projection_ * view_;
+    glUniformMatrix4fv(matrix_location_, 1, false, glm::value_ptr(matrix));
     glUseProgram(program_);
-    glUniformMatrix4fv(projection_loc_, 1, false, glm::value_ptr(projection_));
-    glDrawArrays(GL_LINES, 0, vertices_count);
+    glBindVertexArray(vertex_array_);
+    glDrawArrays(GL_LINES, 0, static_cast<int>(vertices_.size()));
 }
 
 void Renderer::Runtime(double upd, double fps) {
 
-    if ((upd <= 0) || (fps <= 0)) {
-        throw std::invalid_argument("UPD and FPS must be non-negative!");
+    for (auto v: vertices_) {
+        std::cout << v.x << " " << v.y << "\n";
     }
 
-    const double upd_ = upd;
-    const double fps_ = fps;
-
-    const double upd_rate_ = 1. / upd_;
-    const double fps_rate_ = 1. / fps_;
+    const double fps_rate = 1. / fps, upd_rate = 1. / upd;
 
     double last_time,
             curr_time = glfwGetTime(),
-            upd_time_count = 0,
-            fps_time_count = 0;
+            fps_time_count = 0,
+            upd_time_count = 0;
 
-    bool should_redraw = true; // we have to draw figure at the first time
+    bool should_redraw = false;
 
     while (!glfwWindowShouldClose(window_)) {
+        glfwPollEvents();
+        input(window_);
+
         last_time = curr_time;
         curr_time = glfwGetTime();
 
         auto duration = curr_time - last_time;
-
-        upd_time_count += duration;
         fps_time_count += duration;
+        upd_time_count += duration;
 
-        if (should_redraw && fps_time_count >= fps_rate_) {
-            fps_time_count -= fps_rate_;
-            glClear(GL_COLOR_BUFFER_BIT);
-            
-            this->render(); // rendering!
-
-            glfwSwapBuffers(window_);
-            should_redraw = false;
+        while (upd_time_count >= upd_rate) {
+            upd_time_count -= upd_rate;
+            update(upd_rate);
+            should_redraw = true;
         }
 
-        while (upd_time_count >= upd_rate_) {
-            upd_time_count -= upd_rate_;
-            if (!should_redraw) {
-                should_redraw = true;
+        if (should_redraw && (fps_time_count >= fps_rate)) {
+            while (fps_time_count >= fps_rate) {
+                fps_time_count -= fps_rate;
             }
-            glfwPollEvents();
-            // TODO: camera's movement
+            glClear(GL_COLOR_BUFFER_BIT);
+            render();
+            should_redraw = false;
+            glfwSwapBuffers(window_);
         }
     }
+}
+
+void Renderer::input(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_W)) {
+        camera_shift_.y -= 1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S)) {
+        camera_shift_.y += 1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A)) {
+        camera_shift_.x += 1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D)) {
+        camera_shift_.x -= 1;
+    }
+    if (glfwGetKey(window, GLFW_KEY_E)) {
+        scale_ += scale_speed_;
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q)) {
+        scale_ -= scale_speed_;
+        if (scale_ <= 0)
+            scale_ = scale_speed_;
+    }
+}
+
+void Renderer::update(double duration) {
+    auto shift = glm::vec2(camera_shift_) * static_cast<float>(duration) * camera_speed_;
+    view_ = glm::mat4(1.f);
+    view_ = glm::scale(view_, glm::vec3(1 / scale_, 1 / scale_, 0));
+    view_ = glm::translate(view_, glm::vec3(shift, 0));
 }

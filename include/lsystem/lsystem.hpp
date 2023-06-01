@@ -10,21 +10,21 @@
 #include <map>
 
 /**
- * \brief A class for LSystem, contains rules, axiom_ and number of generations
+ * \brief A class for LSystem, contains rules, axiom and number of generations
  * \param axiom
  * \param list_rules
  * \param number_generations
  */
 class LSystem {
 public:
-    /// @brief Rule contains 2 elements: name of variable over which
+    /// @brief rule_type contains 2 elements: name of variable over which
     /// it will be performed and formula itself
     /// E. g. rule (F -> F[+FF][-FF]F[-F][+F]F) equals <'F', "F[+FF][-FF]F[-F][+F]F">
     using Rule = std::pair<char, std::string>;
 
 private:
     /// @brief Axiom of LSystem: it can include any letters and special symbols
-    /// E. g:  axiom_ = VZFFF
+    /// E. g:  axiom = VZFFF
     std::string axiom_;
     /**
      * \brief Rules container
@@ -37,10 +37,10 @@ private:
     std::map<char, std::string> rules_ = {};
 
     /// @brief In fact, it's a number of iterations of the rules
-    /// num_gen is unsigned, so it's non-negative
+    /// numGen is unsigned, so it's non-negative
     unsigned int num_gen_ = 0;
 
-    /// @brief What LSystem outputs; depends on axiom_ (initially equal to it), rules and number of generations
+    /// @brief What LSystem outputs; depends on axiom (initially equal to it), rules and number of generations
     std::string res_;
 
     /// @brief Calculate res_ variable; called in method GetString()
@@ -48,15 +48,15 @@ private:
 
 public:
     /**
-     * \brief LSystem is uniquely determined by an axiom_ and rules.
-     * If number of generations is 0, we have LSystem equals axiom_; this is default option
+     * \brief LSystem is uniquely determined by an axiom and rules.
+     * If number of generations is 0, we have LSystem equals axiom; this is default option
      * \param[in] axiom
      * \param[in] list_rules
      * \param[in] number_generations
      */
     LSystem(const std::string &axiom, std::initializer_list<Rule> list_rules, unsigned int number_generations);
 
-    /// @brief The same as LSystem constructor for std::initializer_list<Rule>
+    /// @brief The same as LSystem constructor for std::initializer_list<rule_type>
     LSystem(const std::string &axiom, const std::vector<Rule> &vector_rules, unsigned int number_generations);
 
     ~LSystem() = default;

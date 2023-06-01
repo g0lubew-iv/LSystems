@@ -5,7 +5,7 @@
 #ifndef L_SYSTEMS_READER_HPP
 #define L_SYSTEMS_READER_HPP
 
-#include <string>
+#include <filesystem>
 #include <vector>
 
 /**
@@ -13,32 +13,35 @@
  * and then passing them to LSystem constructor
  */
 struct Reader {
-
-    /// @brief Rule contains 2 elements: name of variable over which
+    /// @brief rule_type contains 2 elements: name of variable over which
     /// it will be performed and formula itself
     /// E. g. rule (F -> F[+FF][-FF]F[-F][+F]F) equals <'F', "F[+FF][-FF]F[-F][+F]F">
-    using Rule = std::pair<char, std::string>;
+    using rule_type = std::pair<char, std::string>;
+    using rules_container = std::vector<rule_type>;
 
     /// @brief A container with rules
-    std::vector<Rule> vector_rules_;
+    rules_container rules;
 
     /// @brief An axiom of LSystem
-    std::string axiom_;
+    std::string axiom;
 
     /// @brief A number of generations
-    int num_gen_ = 0;
+    int numGen = 0;
 
     /// @brief Parameters of window
-    int width_ = 500;
-    int height_ = 500;
+    int width = 500;
+    int height = 500;
+
+    double lineLength = 10.;
+    double rotationAngle = 90.;
 
     /**
-     * \brief Reading and editing data from console input; syntax of rules: Variable -> Rule body
+     * \brief Reading and editing data from console input; syntax of rules: Variable -> rule_type body
      */
     void ReadFromConsole();
 
     /**
-     * \brief Reading and editing data from file with rules; syntax of rules: Variable -> Rule body;
+     * \brief Reading and editing data from file with rules; syntax of rules: Variable -> rule_type body;
      * N. B: new rule is written from new line, you have to give absolute path to file
      */
     void ReadFromFile();

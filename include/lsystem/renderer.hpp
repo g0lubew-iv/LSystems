@@ -14,28 +14,17 @@ struct GLFWwindow; // just for declaration: GLFWwindow* window_
 /**
  * \brief A class for working with OpenGL and rendering LSystems,
  *
- * \param width The width_ of window; default is 500
- * \param height The height_ of window; default is 500
+ * \param width The width of window; default is 500
+ * \param height The height of window; default is 500
  */
 class Renderer {
 public:
     /**
-     * \brief A struct that defines each line of system
-     * \param width The width_ of window; default is 500
-     * \param height The height_ of window; default is 500
-     */
-    struct Line {
-        glm::vec2 begin = {0, 0};
-        glm::vec2 end = {0, 0};
-    };
-
-public:
-    /**
      * \brief Initialize all processes: setting up GLFW window, making current context, loading GL
-     * \param width The width_ of window; default is 500
-     * \param height The height_ of window; default is 500
+     * \param window_width The width of window; default is 500
+     * \param window_height The height of window; default is 500
      */
-    explicit Renderer(unsigned int width = 500, unsigned int height = 500);
+    explicit Renderer(unsigned int window_width = 500, unsigned int window_height = 500);
 
     /// @brief Terminate GLFW
     ~Renderer();
@@ -60,32 +49,38 @@ public:
      * \param upd (default is 4)
      * \param fps (default is 4)
      */
-    void Runtime(double upd = 4., double fps = 4.);
+    void Runtime(double upd = 60., double fps = 60.);
 
 private:
 
     static const int vertex_byte_size_;
 
-    unsigned int buffer_ = 0;
-    unsigned int vertex_array_ = 0;
     unsigned int program_ = 0;
+    unsigned int vertex_array_ = 0;
+    unsigned int vertex_buffer_ = 0;
 
-    int projection_loc_ = 0;
+    int matrix_location_ = 0;
+    int color_location_ = 0;
 
-    glm::mat4 view_{1.f}; // Единичная
-    glm::mat4 projection_;
+    glm::mat4 view_{1.f};
+    glm::mat4 projection_{1.f};
 
     /// @brief Vector of Lines
-    std::vector<Line> lines_vector_ = {};
+    std::vector<glm::vec2> vertices_ = {};
 
     /// @brief GLFW: object of window
     GLFWwindow *window_;
 
-    bool dirt = false;
-
-    void rebuild();
+    glm::ivec2 camera_shift_ = {0, 0};
+    float camera_speed_ = 0.05;
+    float scale_ = 1;
+    float scale_speed_ = 0.000005;
 
     void render();
+
+    void input(GLFWwindow* window);
+
+    void update(double duration);
 };
 
 #endif //L_SYSTEMS_RENDERER_HPP

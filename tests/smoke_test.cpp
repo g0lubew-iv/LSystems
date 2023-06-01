@@ -9,17 +9,15 @@
 
 int main() {
 
-    Reader r;
-    r.ReadFromFile();
+//    Reader r;
+//    r.ReadFromFile();
+//
+//    auto l_system = LSystem(r.axiom, r.rules, r.numGen);
 
-    auto l_system = LSystem(r.axiom_, r.vector_rules_, r.num_gen_);
-
-    auto drawer = Drawer(l_system.GetString());
-    auto renderer = Renderer(r.width_, r.height_);
-
-    drawer.SetLineLength(2);
-
-    drawer.Draw(renderer);
+    // auto drawer = Drawer(l_system.GetString(), r.lineLength, r.rotationAngle);
+    auto renderer = Renderer(600, 600);
+    // drawer.Draw(renderer);
+    renderer.AddLine(glm::vec2{0, 0}, glm::vec2{300, 300});
     renderer.Runtime();
 
     return 0;
