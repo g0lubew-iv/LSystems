@@ -3,17 +3,18 @@
 //
 
 #include <lsystem/lsystem.hpp>
+#include <utility>
 #include <vector>
 
-LSystem::LSystem(const std::string &axiom, const rules_container &vector_rules, unsigned int number_generations)
-        : axiom_(axiom), res(axiom), num_gen(number_generations), rules(vector_rules) {
+LSystem::LSystem(const std::string &axiom, rules_container vector_rules, unsigned int number_generations)
+        : axiom_(axiom), res(axiom), num_gen(number_generations), rules(std::move(vector_rules)) {
     ;
 }
 
 void LSystem::generate() {
     auto finder = finder_type(rules);
     auto formatter = formatter_type(rules);
-    for (int i = 0; i < num_gen; i++) {
+    for (unsigned int i = 0; i < num_gen; i++) {
         boost::find_format_all(res, finder, formatter);
     }
 }

@@ -55,7 +55,7 @@ public:
      * \param[in] list_rules
      * \param[in] number_generations
      */
-    LSystem(const std::string &axiom, const rules_container &vector_rules, unsigned int number_generations);
+    LSystem(const std::string &axiom, rules_container vector_rules, unsigned int number_generations);
 
     ~LSystem() = default;
 
@@ -84,8 +84,8 @@ public:
     boost::iterator_range<iterator_type> operator()(iterator_type begin, iterator_type end) {
         for (auto &it = begin; it != end; ++it) {
             for (auto &rule: rules_) {
-                const auto &length = rule.first.size();
-                if (std::distance(it, end) >= length) {
+                auto length = static_cast<int>(rule.first.size());
+                if (abs(std::distance(it, end)) >= length) {
                     if (std::string_view(it, it + length) == rule.first) {
                         return {it, it + length};
                     }

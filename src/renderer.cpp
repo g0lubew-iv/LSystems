@@ -1,8 +1,8 @@
 //
-// Created by one_eyed_john on 22/05/23.
+// Created by one_eyed_john on 07/06/23.
 //
 
-#include <lsystem/renderer.hpp>
+#include "lsystem/renderer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -115,10 +115,10 @@ GLFWwindow *create_window(int width, int height) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    // glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
     auto window = glfwCreateWindow(width, height,
                                    "lines", nullptr, nullptr);
@@ -206,37 +206,34 @@ unsigned int make_program(
 Renderer::Renderer(int width, int height) {
     window = create_window(width, height);
     program = make_program("vert.glsl", "frag.glsl");
-    glUseProgram(program);
 
-    color_location = glGetUniformLocation(program, "color");
-    glUniform3f(color_location, 1, 0, 0);
+    glUseProgram(program);
+    int color = glGetUniformLocation(program, "color");
+    glUniform3f(color, 1, 0, 0);
 
     matrix_location = glGetUniformLocation(program, "matrix");
-    projection = glm::ortho(-width / 2, width / 2, -height / 2, height / 2);
+    auto x_val = static_cast<float>(width) / 2;
+    auto y_val = static_cast<float>(height) / 2;
+    projection = glm::ortho(-x_val, x_val, -y_val, y_val);
 
     glCreateBuffers(1, &vertex_buffer);
-    glNamedBufferData(vertex_buffer,
-                      static_cast<int>(vertices.size() * sizeof(glm::vec2)),
-                      vertices.data(), GL_STATIC_DRAW);
 
     glCreateVertexArrays(1, &vertex_array);
+
     // attach buffer
     glVertexArrayVertexBuffer(vertex_array, 0, vertex_buffer, 0, sizeof(glm::vec2));
-    // configure vertex attributes
+
+    // configure vertex attribute
     glEnableVertexArrayAttrib(vertex_array, 0);
     glVertexArrayAttribFormat(vertex_array, 0, 2, GL_FLOAT, false, 0);
     glVertexArrayAttribBinding(vertex_array, 0, 0);
 }
 
 Renderer::~Renderer() {
-
-    for (auto i: vertices) {
-        std::cout << i.x << " " << i.y << "\n";
-    }
-
     glDeleteProgram(program);
     glDeleteVertexArrays(1, &vertex_array);
     glDeleteBuffers(1, &vertex_buffer);
+    glfwTerminate();
 }
 
 void Renderer::AddLine(glm::vec2 begin, glm::vec2 end) {
@@ -244,12 +241,14 @@ void Renderer::AddLine(glm::vec2 begin, glm::vec2 end) {
     vertices.push_back(end);
 }
 
-void Renderer::render() {
-    auto matrix = projection * view;
-    glUseProgram(program);
-    glUniformMatrix4fv(matrix_location, 1, false, glm::value_ptr(matrix));
-    glBindVertexArray(vertex_array);
-    glDrawArrays(GL_LINES, 0, static_cast<int>(vertices.size()));
+void Renderer::UpdateData() {
+    glNamedBufferData(
+            vertex_buffer,
+            static_cast<int>(sizeof(glm::vec2) * vertices.size()),
+            vertices.data(),
+            GL_STATIC_DRAW
+    );
+    count_vertices = static_cast<int>(vertices.size());
 }
 
 void Renderer::Runtime(double upd, double fps) {
@@ -261,7 +260,7 @@ void Renderer::Runtime(double upd, double fps) {
     bool should_redraw = false;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
-        // input();
+        input();
         last_time = curr_time;
         curr_time = glfwGetTime();
         auto duration = curr_time - last_time;
@@ -269,7 +268,7 @@ void Renderer::Runtime(double upd, double fps) {
         upd_time_count += duration;
         while (upd_time_count >= upd_rate) {
             upd_time_count -= upd_rate;
-            // update(upd_rate);
+            update(upd_rate);
             should_redraw = true;
         }
         if (should_redraw && fps_time_count >= fps_rate) {
@@ -281,6 +280,14 @@ void Renderer::Runtime(double upd, double fps) {
             should_redraw = false;
         }
     }
+}
+
+void Renderer::render() {
+    glUseProgram(program);
+    auto matrix = projection * view;
+    glUniformMatrix4fv(matrix_location, 1, false, glm::value_ptr(matrix));
+    glBindVertexArray(vertex_array);
+    glDrawArrays(GL_LINES, 0, count_vertices);
 }
 
 void Renderer::input() {
