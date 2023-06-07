@@ -13,8 +13,6 @@
 #include <fstream>
 #include <iostream>
 
-const int Renderer::vertex_byte_size_ = sizeof(glm::vec2);
-
 void glDebugOutput(GLenum source,
                    GLenum type,
                    GLuint id,
@@ -108,6 +106,47 @@ void glDebugOutput(GLenum source,
     std::cout << '\n' << std::endl;
 }
 
+GLFWwindow *create_window(int width, int height) {
+    if (!glfwInit()) {
+        std::cout << "Failed to init GLFW!\n";
+        std::terminate();
+    }
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
+    auto window = glfwCreateWindow(width, height,
+                                   "lines", nullptr, nullptr);
+
+    if (window == nullptr) {
+        std::cout << "Failed to create window!\n";
+        std::terminate();
+    }
+
+    glfwMakeContextCurrent(window);
+
+    if (!gladLoadGL()) {
+        std::cout << "Failed to initialize Glad!\n";
+        std::terminate();
+    }
+
+    GLint flags;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        std::cout << "OpenGL debug enabled\n";
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(glDebugOutput, nullptr);
+    }
+
+    return window;
+}
+
 std::string load_shader_source(const std::filesystem::path &file_name) {
     auto path = "./shaders" / file_name;
     auto file = std::ifstream(path);
@@ -164,159 +203,113 @@ unsigned int make_program(
     return program;
 }
 
-Renderer::Renderer(unsigned int window_width, unsigned int window_height) {
-    if (!glfwInit()) {
-        std::cout << "Failed to init GLFW!\n";
-        std::terminate();
-    }
+Renderer::Renderer(int width, int height) {
+    window = create_window(width, height);
+    program = make_program("vert.glsl", "frag.glsl");
+    glUseProgram(program);
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    color_location = glGetUniformLocation(program, "color");
+    glUniform3f(color_location, 1, 0, 0);
 
-    window_ = glfwCreateWindow(static_cast<int>(window_width), static_cast<int>(window_height),
-                               "LSystems", nullptr, nullptr);
+    matrix_location = glGetUniformLocation(program, "matrix");
+    projection = glm::ortho(-width / 2, width / 2, -height / 2, height / 2);
 
-    if (window_ == nullptr) {
-        std::cout << "Failed to create window!\n";
-        std::terminate();
-    }
+    glCreateBuffers(1, &vertex_buffer);
+    glNamedBufferData(vertex_buffer,
+                      static_cast<int>(vertices.size() * sizeof(glm::vec2)),
+                      vertices.data(), GL_STATIC_DRAW);
 
-    glfwMakeContextCurrent(window_);
-
-    if (!gladLoadGL()) {
-        std::cout << "Failed to initialize Glad!\n";
-        std::terminate();
-    }
-
-    GLint flags;
-    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-        std::cout << "OpenGL debug enabled\n";
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback(glDebugOutput, nullptr);
-    }
-
-    program_ = make_program("vert.glsl", "frag.glsl");
-    glUseProgram(program_);
-
-    color_location_ = glGetUniformLocation(program_, "color");
-    glUniform3f(color_location_, 1, 0, 0);
-
-    matrix_location_ = glGetUniformLocation(program_, "matrix");
-    projection_ = glm::ortho(-static_cast<float>(window_width) / 2, static_cast<float>(window_width) / 2,
-                             -static_cast<float>(window_height) / 2, static_cast<float>(window_height) / 2);
-
-    glCreateBuffers(1, &vertex_buffer_);
-    glNamedBufferData(vertex_buffer_,
-                      static_cast<int>(vertices_.size() * vertex_byte_size_),
-                      vertices_.data(), GL_STATIC_DRAW);
-
-    glCreateVertexArrays(1, &vertex_array_);
+    glCreateVertexArrays(1, &vertex_array);
     // attach buffer
-    glVertexArrayVertexBuffer(vertex_array_, 0, vertex_buffer_, 0, vertex_byte_size_);
+    glVertexArrayVertexBuffer(vertex_array, 0, vertex_buffer, 0, sizeof(glm::vec2));
     // configure vertex attributes
-    glEnableVertexArrayAttrib(vertex_array_, 0);
-    glVertexArrayAttribFormat(vertex_array_, 0, 2, GL_FLOAT, false, 0);
-    glVertexArrayAttribBinding(vertex_array_, 0, 0);
+    glEnableVertexArrayAttrib(vertex_array, 0);
+    glVertexArrayAttribFormat(vertex_array, 0, 2, GL_FLOAT, false, 0);
+    glVertexArrayAttribBinding(vertex_array, 0, 0);
 }
 
 Renderer::~Renderer() {
-    glDeleteProgram(program_);
-    glDeleteVertexArrays(1, &vertex_array_);
-    glDeleteBuffers(1, &vertex_buffer_);
 
-    glfwTerminate();
+    for (auto i: vertices) {
+        std::cout << i.x << " " << i.y << "\n";
+    }
+
+    glDeleteProgram(program);
+    glDeleteVertexArrays(1, &vertex_array);
+    glDeleteBuffers(1, &vertex_buffer);
 }
 
 void Renderer::AddLine(glm::vec2 begin, glm::vec2 end) {
-    vertices_.push_back(begin);
-    vertices_.push_back(end);
+    vertices.push_back(begin);
+    vertices.push_back(end);
 }
 
 void Renderer::render() {
-    auto matrix = projection_ * view_;
-    glUniformMatrix4fv(matrix_location_, 1, false, glm::value_ptr(matrix));
-    glUseProgram(program_);
-    glBindVertexArray(vertex_array_);
-    glDrawArrays(GL_LINES, 0, static_cast<int>(vertices_.size()));
+    auto matrix = projection * view;
+    glUseProgram(program);
+    glUniformMatrix4fv(matrix_location, 1, false, glm::value_ptr(matrix));
+    glBindVertexArray(vertex_array);
+    glDrawArrays(GL_LINES, 0, static_cast<int>(vertices.size()));
 }
 
 void Renderer::Runtime(double upd, double fps) {
-
-    for (auto v: vertices_) {
-        std::cout << v.x << " " << v.y << "\n";
-    }
-
     const double fps_rate = 1. / fps, upd_rate = 1. / upd;
-
     double last_time,
             curr_time = glfwGetTime(),
             fps_time_count = 0,
             upd_time_count = 0;
-
     bool should_redraw = false;
-
-    while (!glfwWindowShouldClose(window_)) {
+    while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
-        input(window_);
-
+        // input();
         last_time = curr_time;
         curr_time = glfwGetTime();
-
         auto duration = curr_time - last_time;
         fps_time_count += duration;
         upd_time_count += duration;
-
         while (upd_time_count >= upd_rate) {
             upd_time_count -= upd_rate;
-            update(upd_rate);
+            // update(upd_rate);
             should_redraw = true;
         }
-
-        if (should_redraw && (fps_time_count >= fps_rate)) {
-            while (fps_time_count >= fps_rate) {
-                fps_time_count -= fps_rate;
-            }
+        if (should_redraw && fps_time_count >= fps_rate) {
             glClear(GL_COLOR_BUFFER_BIT);
             render();
+            glfwSwapBuffers(window);
+            while (fps_time_count >= fps_rate)
+                fps_time_count -= fps_rate;
             should_redraw = false;
-            glfwSwapBuffers(window_);
         }
     }
 }
 
-void Renderer::input(GLFWwindow *window) {
+void Renderer::input() {
     if (glfwGetKey(window, GLFW_KEY_W)) {
-        camera_shift_.y -= 1;
+        camera_shift.y -= 1;
     }
     if (glfwGetKey(window, GLFW_KEY_S)) {
-        camera_shift_.y += 1;
+        camera_shift.y += 1;
     }
     if (glfwGetKey(window, GLFW_KEY_A)) {
-        camera_shift_.x += 1;
+        camera_shift.x += 1;
     }
     if (glfwGetKey(window, GLFW_KEY_D)) {
-        camera_shift_.x -= 1;
+        camera_shift.x -= 1;
     }
     if (glfwGetKey(window, GLFW_KEY_E)) {
-        scale_ += scale_speed_;
+        scale += scale_speed;
     }
     if (glfwGetKey(window, GLFW_KEY_Q)) {
-        scale_ -= scale_speed_;
-        if (scale_ <= 0)
-            scale_ = scale_speed_;
+        scale -= scale_speed;
+        if (scale <= 0)
+            scale = scale_speed;
     }
 }
 
 void Renderer::update(double duration) {
-    auto shift = glm::vec2(camera_shift_) * static_cast<float>(duration) * camera_speed_;
-    view_ = glm::mat4(1.f);
-    view_ = glm::scale(view_, glm::vec3(1 / scale_, 1 / scale_, 0));
-    view_ = glm::translate(view_, glm::vec3(shift, 0));
+    view = glm::mat4(1.f);
+    auto scale_val = 1 / scale;
+    view = glm::scale(view, glm::vec3(scale_val, scale_val, 0));
+    auto shift = glm::vec2(camera_shift) * static_cast<float>(duration) * camera_speed;
+    view = glm::translate(view, glm::vec3(shift, 0));
 }

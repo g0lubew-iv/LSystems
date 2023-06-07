@@ -6,7 +6,7 @@
 #define L_SYSTEMS_READER_HPP
 
 #include <filesystem>
-#include <vector>
+#include <unordered_map>
 
 /**
  * \brief A class for reading data for LSystems in two ways: from console or file,
@@ -16,8 +16,7 @@ struct Reader {
     /// @brief rule_type contains 2 elements: name of variable over which
     /// it will be performed and formula itself
     /// E. g. rule (F -> F[+FF][-FF]F[-F][+F]F) equals <'F', "F[+FF][-FF]F[-F][+F]F">
-    using rule_type = std::pair<char, std::string>;
-    using rules_container = std::vector<rule_type>;
+    using rules_container = std::unordered_map<std::string, std::string>;
 
     /// @brief A container with rules
     rules_container rules;
@@ -38,7 +37,7 @@ struct Reader {
     /**
      * \brief Reading and editing data from console input; syntax of rules: Variable -> rule_type body
      */
-    void ReadFromConsole();
+    // void ReadFromConsole();
 
     /**
      * \brief Reading and editing data from file with rules; syntax of rules: Variable -> rule_type body;

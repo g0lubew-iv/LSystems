@@ -7,7 +7,8 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
+#include <boost/algorithm/string/find_format.hpp>
 
 /**
  * \brief A class for LSystem, contains rules, axiom and number of generations
@@ -20,7 +21,7 @@ public:
     /// @brief rule_type contains 2 elements: name of variable over which
     /// it will be performed and formula itself
     /// E. g. rule (F -> F[+FF][-FF]F[-F][+F]F) equals <'F', "F[+FF][-FF]F[-F][+F]F">
-    using Rule = std::pair<char, std::string>;
+    using rules_container = std::unordered_map<std::string, std::string>;
 
 private:
     /// @brief Axiom of LSystem: it can include any letters and special symbols
@@ -34,14 +35,14 @@ private:
      * Y -> YZ
      * Z -> [-FFF][+FFF]F
      */
-    std::map<char, std::string> rules_ = {};
+    rules_container rules{};
 
     /// @brief In fact, it's a number of iterations of the rules
     /// numGen is unsigned, so it's non-negative
-    unsigned int num_gen_ = 0;
+    unsigned int num_gen = 0;
 
     /// @brief What LSystem outputs; depends on axiom (initially equal to it), rules and number of generations
-    std::string res_;
+    std::string res;
 
     /// @brief Calculate res_ variable; called in method GetString()
     void generate();
@@ -54,10 +55,7 @@ public:
      * \param[in] list_rules
      * \param[in] number_generations
      */
-    LSystem(const std::string &axiom, std::initializer_list<Rule> list_rules, unsigned int number_generations);
-
-    /// @brief The same as LSystem constructor for std::initializer_list<rule_type>
-    LSystem(const std::string &axiom, const std::vector<Rule> &vector_rules, unsigned int number_generations);
+    LSystem(const std::string &axiom, const rules_container &vector_rules, unsigned int number_generations);
 
     ~LSystem() = default;
 
@@ -70,16 +68,53 @@ public:
     LSystem &operator=(LSystem &&other) noexcept = default;
 
     /**
-     * \brief Change number of generations: the volume of res_ variable will change accordingly
-     * \param[in] num_gen
-     */
-    void SetNumberGenerations(unsigned int num_gen);
-
-    /**
      * \brief Annul previous generations and generate new (what depends on new number of generations)
      * \return res_
      */
     std::string GetString();
+};
+
+class finder_type {
+public:
+    explicit finder_type(LSystem::rules_container &rules) : rules_(rules) {}
+
+    ~finder_type() = default;
+
+    template<class iterator_type>
+    boost::iterator_range<iterator_type> operator()(iterator_type begin, iterator_type end) {
+        for (auto &it = begin; it != end; ++it) {
+            for (auto &rule: rules_) {
+                const auto &length = rule.first.size();
+                if (std::distance(it, end) >= length) {
+                    if (std::string_view(it, it + length) == rule.first) {
+                        return {it, it + length};
+                    }
+                } else {
+                    continue;
+                }
+            }
+        }
+        return {end, end};
+    }
+
+private:
+    LSystem::rules_container &rules_;
+};
+
+class formatter_type {
+public:
+    explicit formatter_type(LSystem::rules_container &rules) : rules_(rules) {}
+
+    ~formatter_type() = default;
+
+    template<class iterator_type>
+    boost::iterator_range<iterator_type> operator()(const boost::iterator_range<iterator_type> &range) const {
+        auto it = rules_.find(std::string(std::begin(range), std::end(range)));
+        return {it->second};
+    }
+
+private:
+    LSystem::rules_container &rules_;
 };
 
 #endif //L_SYSTEMS_LSYSTEM_HPP

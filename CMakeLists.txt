@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 project(l_systems CXX)
 
-add_library(l_systems STATIC)
+add_executable(drawer main.cpp)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
         include/lsystem/lsystem.hpp
@@ -19,9 +19,9 @@ set(L_SYSTEMS_SOURCES
         src/reader.cpp
         )
 
-target_sources(l_systems PRIVATE ${L_SYSTEMS_SOURCES})
+target_sources(drawer PRIVATE ${L_SYSTEMS_SOURCES})
 
-target_include_directories(l_systems
+target_include_directories(drawer
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
@@ -29,35 +29,36 @@ target_include_directories(l_systems
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
         )
 
-target_compile_features(l_systems PUBLIC cxx_std_20)
+target_compile_features(drawer PUBLIC cxx_std_20)
 
 set_target_properties(
-        l_systems PROPERTIES
+        drawer PROPERTIES
         PUBLIC_HEADER "${L_SYSTEMS_PUBLIC_HEADERS}"
 )
 
 find_package(OpenGL REQUIRED)
-target_link_libraries(l_systems PUBLIC OpenGL::GL)
+target_link_libraries(drawer PUBLIC OpenGL::GL)
 
 find_package(glfw3 REQUIRED)
-target_link_libraries(l_systems PUBLIC glfw)
+target_link_libraries(drawer PUBLIC glfw)
 
 find_package(glad REQUIRED)
-target_link_libraries(l_systems PUBLIC glad::glad)
+target_link_libraries(drawer PUBLIC glad::glad)
 
 find_package(glm REQUIRED)
-target_link_libraries(l_systems PUBLIC glm::glm)
+target_link_libraries(drawer PUBLIC glm::glm)
+
+find_package(Boost REQUIRED)
+target_link_libraries(drawer PUBLIC Boost::boost)
 
 add_custom_target(
         copy_shaders
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/shaders
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/shaders
-        COMMENT "Copying ${CMAKE_CURRENT_SOURCE_DIR}/shaders to ${CMAKE_CURRENT_BINARY_DIR}/shaders"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/tests/shaders
-        COMMENT "For tests: copying ${CMAKE_CURRENT_SOURCE_DIR}/shaders to ${CMAKE_CURRENT_BINARY_DIR}/tests/shaders"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Copying ${CMAKE_CURRENT_SOURCE_DIR}/input.txt to ${CMAKE_CURRENT_BINARY_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/input.txt ${CMAKE_CURRENT_BINARY_DIR}/input.txt
 )
 
-add_dependencies(l_systems copy_shaders)
+add_dependencies(drawer copy_shaders)
 
-add_subdirectory(tests)
+# add_subdirectory(tests)

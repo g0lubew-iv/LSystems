@@ -21,10 +21,10 @@ class Renderer {
 public:
     /**
      * \brief Initialize all processes: setting up GLFW window, making current context, loading GL
-     * \param window_width The width of window; default is 500
-     * \param window_height The height of window; default is 500
+     * \param window_width The width of window; default is 800
+     * \param window_height The height of window; default is 800
      */
-    explicit Renderer(unsigned int window_width = 500, unsigned int window_height = 500);
+    explicit Renderer(int window_width = 800, int window_height = 800);
 
     /// @brief Terminate GLFW
     ~Renderer();
@@ -53,32 +53,29 @@ public:
 
 private:
 
-    static const int vertex_byte_size_;
+    std::vector<glm::vec2> vertices{};
 
-    unsigned int program_ = 0;
-    unsigned int vertex_array_ = 0;
-    unsigned int vertex_buffer_ = 0;
+    unsigned int program = 0,
+            vertex_buffer = 0,
+            vertex_array = 0;
 
-    int matrix_location_ = 0;
-    int color_location_ = 0;
+    int matrix_location = 0,
+            color_location = 0;
 
-    glm::mat4 view_{1.f};
-    glm::mat4 projection_{1.f};
-
-    /// @brief Vector of Lines
-    std::vector<glm::vec2> vertices_ = {};
+    glm::mat4 projection{1.f};
+    glm::mat4 view{1.f};
 
     /// @brief GLFW: object of window
-    GLFWwindow *window_;
+    GLFWwindow *window;
 
-    glm::ivec2 camera_shift_ = {0, 0};
-    float camera_speed_ = 0.05;
-    float scale_ = 1;
-    float scale_speed_ = 0.000005;
+    glm::ivec2 camera_shift = {0, 0};
+    float camera_speed = 0.05;
+    float scale = 1;
+    float scale_speed = 0.000005;
 
     void render();
 
-    void input(GLFWwindow *window);
+    void input();
 
     void update(double duration);
 };

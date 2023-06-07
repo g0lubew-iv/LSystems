@@ -13,7 +13,7 @@ void Drawer::move_node(Renderer &render, bool should_draw) {
     auto site_2 = Node{
             glm::vec2{
                     site_1.point.x + std::sin(site_1.angle) * line_length_,
-                    site_1.point.y - std::cos(site_1.angle) * line_length_,
+                    site_1.point.y + std::cos(site_1.angle) * line_length_,
             },
             site_1.angle
     };
