@@ -15,7 +15,7 @@
 struct Reader {
     /// @brief rules_container contains 2 elements: name of variable over which
     /// it will be performed and formula itself
-    /// E. g. rule (FF_F[+FF][-FF]F[-F][+F]F) equals <"FF", "F[+FF][-FF]F[-F][+F]F">
+    /// E. g. rule "FF->F[+FF][-FF]F[-F][+F]F" equals <"FF", "F[+FF][-FF]F[-F][+F]F">
     using rules_container = std::unordered_map<std::string, std::string>;
 
     /// @brief A container with rules
@@ -48,7 +48,8 @@ struct Reader {
 
     /**
      * \brief Reading and editing data based on command line arguments;
-     * syntax of rules: Variable_Rule
+     * syntax of rules: Variable->Rule
+     * \return Program termination signal
      */
     bool ParseCommandLine(int ac, char *av[]);
 

@@ -1,0 +1,5 @@
+<map id="Renderer::AddLine" name="Renderer::AddLine">
+<area shape="rect" id="node1" title="Add new section (2 vectors, begin and end)" alt="" coords="364,5,504,33"/>
+<area shape="rect" id="node2" href="$classDrawer.html#a5f8f97f4620e7d72e37f1e88ef2f32a0" title="Make a new Node, move to it and instructs Renderer to draw it directly with the top one." alt="" coords="164,5,316,33"/>
+<area shape="rect" id="node3" href="$classDrawer.html#a2e2441e1034839fb31380eb699d70b22" title="Processes the string and makes Renderer work: draws a segment (line) between top and new node." alt="" coords="5,5,116,33"/>
+</map>

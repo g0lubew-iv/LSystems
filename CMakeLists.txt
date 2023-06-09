@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 project(l_systems CXX)
 
+# include(GNUInstallDirs)
+
 add_executable(l_system_drawer main.cpp)
 
 set(L_SYSTEMS_PUBLIC_HEADERS

@@ -13,14 +13,14 @@ Rules definitions (according to Paul Bourke):
 |        \[ | Push current drawing state onto stack              |
 |        \] | Pop current drawing state from the stack           |
 
-<h3>Building</h2>
+<h3>Building</h3>
 Dependencies:
 1. GLFW
 2. Glad
 3. Glm
 4. Boost
 
-After CMake execution try:
+<h3>Using</h3>
 
 ```
 l_system_drawer -h
@@ -29,9 +29,16 @@ l_system_drawer -h
 E.g. command as follows...
 
 ```
-./l_system_drawer -gen 7 -rot 22.5 -axm F -rul F_FF-\[XY\]+\[XY\] -rul X_+FY -rul Y_-FX
+./l_system_drawer -gen 7 -rot 22.5 -axm "F" -rul "F->FF-[XY]+[XY]" -rul "X->+FY" -rul "Y->-FX"
 ```
 ... will produce window with this plant:
 
-![plot](./example.png)
+![plot](./example1.png)
 
+Another one:
+
+```
+./l_system_drawer -gen 10 -rot 120 -axm "F+F+F" -rul "F->F-F+F"
+```
+
+![plot](./example2.png)

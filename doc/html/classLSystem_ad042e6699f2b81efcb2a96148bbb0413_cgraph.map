@@ -1,0 +1,4 @@
+<map id="LSystem::GetString" name="LSystem::GetString">
+<area shape="rect" id="node1" title="Annul previous generations and generate new (what depends on new number of generations)" alt="" coords="5,5,152,33"/>
+<area shape="rect" id="node2" href="$classLSystem.html#a03d07caddef6b5a10141c5cfe823aa64" title="Calculate res_ variable; called in method GetString()" alt="" coords="200,5,343,33"/>
+</map>

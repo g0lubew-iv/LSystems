@@ -50,19 +50,19 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
             is_rul = false;
             auto it = str.begin();
 
-            while ((it != str.end()) && (std::string_view(it, it + 1) != "_")) {
-                // symbol '_' is separator between variable and rule body
+            while ((it != str.end()) && (std::string_view(it, it + 2) != "->")) {
+                // symbol '->' is separator between variable and rule body
                 ++it;
             }
             if (it == str.begin()) {
                 continue;
             }
-            if (std::distance(it, str.end()) <= 1) {
+            if (std::distance(it, str.end()) <= 2) {
                 // not enough space
                 continue;
             }
 
-            rules[std::string(str.begin(), it)] = std::string_view(it + 1, str.end());
+            rules[std::string(str.begin(), it)] = std::string_view(it + 2, str.end());
         } else if (is_axm) {
             axiom = str;
         } else if (is_gen) {
