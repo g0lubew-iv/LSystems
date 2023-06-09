@@ -1,3 +1,10 @@
-LSystems: coursework, mentor: Polevoy D. V.
-Some definitions (in rules):
-![image](https://github.com/g0lubew-iv/LSystems/assets/60041938/2011db8a-3943-474a-a2dc-d62c7ceb50c1)
+LSystems: coursework, mentor: Polevoy D. V. 
+
+Rules definitions (according to Paul Bourke):
+
+1. F: Move forward by line length drawing a line
+2. f: Move forward by line length without drawing a line
+3. +: Turn left by turning angle
+4. -: Turn right by turning angle
+5. [: Push current drawing state onto stack
+6. ]: Pop current drawing state from the stack

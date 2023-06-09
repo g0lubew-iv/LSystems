@@ -13,99 +13,6 @@
 #include <fstream>
 #include <iostream>
 
-void glDebugOutput(GLenum source,
-                   GLenum type,
-                   GLuint id,
-                   GLenum severity,
-                   GLsizei,
-                   const GLchar *message,
-                   const void *
-) {
-    if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
-        return;
-
-    std::cout << "---------------\n";
-    std::cout << "Debug message (" << id << "): " << message << '\n';
-
-    std::cout << "Source: ";
-    switch (source) {
-        case GL_DEBUG_SOURCE_API:
-            std::cout << "API";
-            break;
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-            std::cout << "Window System";
-            break;
-        case GL_DEBUG_SOURCE_SHADER_COMPILER:
-            std::cout << "Shader Compiler";
-            break;
-        case GL_DEBUG_SOURCE_THIRD_PARTY:
-            std::cout << "Third Party";
-            break;
-        case GL_DEBUG_SOURCE_APPLICATION:
-            std::cout << "Application";
-            break;
-        case GL_DEBUG_SOURCE_OTHER:
-            std::cout << "Other";
-            break;
-        default:
-            std::cout << "Unknown";
-    }
-    std::cout << '\n';
-
-    std::cout << "Type: ";
-    switch (type) {
-        case GL_DEBUG_TYPE_ERROR:
-            std::cout << "Error";
-            break;
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            std::cout << "Deprecated Behaviour";
-            break;
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            std::cout << "Undefined Behaviour";
-            break;
-        case GL_DEBUG_TYPE_PORTABILITY:
-            std::cout << "Portability";
-            break;
-        case GL_DEBUG_TYPE_PERFORMANCE:
-            std::cout << "Performance";
-            break;
-        case GL_DEBUG_TYPE_MARKER:
-            std::cout << "Marker";
-            break;
-        case GL_DEBUG_TYPE_PUSH_GROUP:
-            std::cout << "Push Group";
-            break;
-        case GL_DEBUG_TYPE_POP_GROUP:
-            std::cout << "Pop Group";
-            break;
-        case GL_DEBUG_TYPE_OTHER:
-            std::cout << "Other";
-            break;
-        default:
-            std::cout << "Unknown";
-    }
-    std::cout << '\n';
-
-    std::cout << "Severity: ";
-    switch (severity) {
-        case GL_DEBUG_SEVERITY_HIGH:
-            std::cout << "High";
-            break;
-        case GL_DEBUG_SEVERITY_MEDIUM:
-            std::cout << "Medium";
-            break;
-        case GL_DEBUG_SEVERITY_LOW:
-            std::cout << "Low";
-            break;
-        case GL_DEBUG_SEVERITY_NOTIFICATION:
-            std::cout << "Notification";
-            break;
-        default:
-            std::cout << "Unknown";
-    }
-    std::cout << '\n' << std::endl;
-}
-
 GLFWwindow *create_window(int width, int height) {
     if (!glfwInit()) {
         std::cout << "Failed to init GLFW!\n";
@@ -121,27 +28,18 @@ GLFWwindow *create_window(int width, int height) {
     // glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
     auto window = glfwCreateWindow(width, height,
-                                   "lines", nullptr, nullptr);
+                                   "LSystem", nullptr, nullptr);
 
     if (window == nullptr) {
         std::cout << "Failed to create window!\n";
-        std::terminate();
+        throw std::runtime_error("Failed to create window!");
     }
 
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGL()) {
         std::cout << "Failed to initialize Glad!\n";
-        std::terminate();
-    }
-
-    GLint flags;
-    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-        std::cout << "OpenGL debug enabled\n";
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback(glDebugOutput, nullptr);
+        throw std::runtime_error("Failed to initialize Glad!");
     }
 
     return window;
@@ -170,10 +68,10 @@ unsigned int make_shader(GLenum type, const std::filesystem::path &file_name) {
     if (!success) {
         char info_log[512];
         glGetShaderInfoLog(shader, 512, nullptr, info_log);
-        std::cout << "failed to compile shader\n";
-        std::cout << "\tfile: " << file_name << '\n';
-        std::cout << "\tlog: " << info_log << '\n';
-        throw std::runtime_error("failed to compile shader");
+        std::cout << "Failed to compile shader!\n";
+        std::cout << "\tFile: " << file_name << '\n';
+        std::cout << "\tLog: " << info_log << '\n';
+        throw std::runtime_error("Failed to compile shader!");
     }
     return shader;
 }
@@ -192,9 +90,9 @@ unsigned int make_program(
     if (!success) {
         char info_log[512];
         glGetProgramInfoLog(program, 512, nullptr, info_log);
-        std::cout << "failed to link program\n";
-        std::cout << "\tlog: " << info_log << '\n';
-        throw std::runtime_error("failed to link program");
+        std::cout << "Failed to link program!\n";
+        std::cout << "\tLog: " << info_log << '\n';
+        throw std::runtime_error("Failed to link program!");
     }
     glDetachShader(program, vertex_shader);
     glDetachShader(program, fragment_shader);
@@ -248,7 +146,7 @@ void Renderer::UpdateData() {
             vertices.data(),
             GL_STATIC_DRAW
     );
-    count_vertices = static_cast<int>(vertices.size());
+    number_vertices = static_cast<int>(vertices.size());
 }
 
 void Renderer::Runtime(double upd, double fps) {
@@ -287,7 +185,7 @@ void Renderer::render() {
     auto matrix = projection * view;
     glUniformMatrix4fv(matrix_location, 1, false, glm::value_ptr(matrix));
     glBindVertexArray(vertex_array);
-    glDrawArrays(GL_LINES, 0, count_vertices);
+    glDrawArrays(GL_LINES, 0, number_vertices);
 }
 
 void Renderer::input() {

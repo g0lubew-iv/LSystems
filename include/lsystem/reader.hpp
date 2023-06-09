@@ -9,13 +9,13 @@
 #include <unordered_map>
 
 /**
- * \brief A class for reading data for LSystems in two ways: from console or file,
+ * \brief A struct for reading data for LSystems in two ways: from arguments of command line or file,
  * and then passing them to LSystem constructor
  */
 struct Reader {
-    /// @brief rule_type contains 2 elements: name of variable over which
+    /// @brief rules_container contains 2 elements: name of variable over which
     /// it will be performed and formula itself
-    /// E. g. rule (F -> F[+FF][-FF]F[-F][+F]F) equals <'F', "F[+FF][-FF]F[-F][+F]F">
+    /// E. g. rule (FF_F[+FF][-FF]F[-F][+F]F) equals <"FF", "F[+FF][-FF]F[-F][+F]F">
     using rules_container = std::unordered_map<std::string, std::string>;
 
     /// @brief A container with rules
@@ -24,26 +24,39 @@ struct Reader {
     /// @brief An axiom of LSystem
     std::string axiom;
 
-    /// @brief A number of generations
+    /// @brief A number of generations; default it is 0, axiom
     int numGen = 0;
 
     /// @brief Parameters of window
     int width = 500;
     int height = 500;
 
-    double lineLength = 10.;
+    /// @brief Length of the drawing system (command 'F')
+    double lineLength = 50.;
+
+    /// @brief Angle of rotation (see commands '+' and '-')
     double rotationAngle = 90.;
 
     /**
-     * \brief Reading and editing data from console input; syntax of rules: Variable -> rule_type body
+     * \brief Checking if NumGen is non-negative (>= 0)
      */
-    // void ReadFromConsole();
+    void CheckNumGen() const {
+        if (numGen < 0)
+            // Check if number of generations is non-negative, then cast to unsigned int
+            throw std::invalid_argument("Number of generation must be non-negative!");
+    }
 
     /**
-     * \brief Reading and editing data from file with rules; syntax of rules: Variable -> rule_type body;
+     * \brief Reading and editing data based on command line arguments;
+     * syntax of rules: Variable_Rule
+     */
+    bool ParseCommandLine(int ac, char *av[]);
+
+    /**
+     * \brief Reading and editing data from file with rules; syntax of rules: Variable->Rule;
      * N. B: new rule is written from new line, you have to give absolute path to file
      */
-    void ReadFromFile();
+    void ParseFile(const std::string &file_path);
 };
 
 #endif //L_SYSTEMS_READER_HPP

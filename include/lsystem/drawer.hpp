@@ -15,17 +15,13 @@
 #include <stack>
 
 /**
- * \brief A class for drawing LSystems,
- * includes out string of this LSystem;
- * so, the whole figure is the stack of nodes
- * \param lineLength The length of segment connecting two nodes
- * \param rotationAngle The angle of rotation (relative to the vertical)
+ * \brief A class for drawing LSystems, processes and gives commands to Renderer
  */
 class Drawer {
 public:
     /**
-     * \brief Node is the position of Drawer on the plane,
-     * it is characterized by coordinates (x_, y_) and the angle of rotation (relative to the vertical) - angle_
+     * \brief Node is position of Drawer on the plane,
+     * it is characterized by double coordinates and the angle of rotation (relative to the vertical)
      */
     struct Node {
         glm::dvec2 point;
@@ -47,12 +43,14 @@ public:
 
     /**
      * \brief Change rotation angle of stack's top
+     * * \param direction Is counterclockwise
      */
     void turn_node(bool direction);
 
     /**
-     * \brief Make a new Node, move on it and instructs Renderer to connect (draw!) it directly with the top one
-     * \param render
+     * \brief Make a new Node, move to it and instructs Renderer to draw it directly with the top one
+     * \param render Instance of class Renderer
+     * \param should_draw If we should draw (e.g. command 'f' means false)
      */
     void move_node(Renderer &render, bool should_draw = true);
 
@@ -61,24 +59,14 @@ public:
      * \param l_system_string The out string of LSystem
      * \param line_length The length of segment connecting two nodes; default is 5
      * \param rotation_angle The angle of rotation (relative to the vertical); default is 0
-     * \param width The width of window; default is 500
-     * \param height The height of window; default is 500
      */
     explicit Drawer(std::string l_system_string, double line_length = 10., double rotation_angle = 90.);
 
     ~Drawer() = default;
 
-    Drawer(const Drawer &other) = default;
-
-    Drawer &operator=(const Drawer &other) = default;
-
-    Drawer(Drawer &&other) noexcept = default;
-
-    Drawer &operator=(Drawer &&other) noexcept = default;
-
     /**
-     * \brief Processes the string and makes OpenGL work: draws a segment (line) between top and new nodes
-     * \param render
+     * \brief Processes the string and makes Renderer work: draws a segment (line) between top and new node
+     * \param render Instance of class Renderer
      */
     void Draw(Renderer &render);
 };
