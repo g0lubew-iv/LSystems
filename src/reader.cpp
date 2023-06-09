@@ -13,19 +13,23 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
         return false;
     }
 
-    bool is_rul = false;
+    bool is_rule = false;
     bool is_axm = false;
     bool is_gen = false;
     bool is_len = false;
     bool is_rot = false;
+    bool is_file = false;
 
     // the first argument (argv[0]) is executable filename!
     for (int i = 1; i < argc; i++) {
         bool is_error = false;
         std::string str = static_cast<std::string>(argv[i]);
 
-        if (str == "-rul") {
-            is_rul = true;
+        if (str == "-rule") {
+            is_rule = true;
+            continue;
+        } else if (str == "-file") {
+            is_file = true;
             continue;
         } else if (str == "-axm") {
             is_axm = true;
@@ -40,14 +44,15 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
             is_rot = true;
             continue;
         } else if ((str == "-h") || (str == "-help")) {
-            std::cout << "-gen : Set a number of generations <integer>\n";
-            std::cout << "-len : Set a line length <double>\n";
-            std::cout << "-rot : Set a rotation angle <double>\n";
-            std::cout << "-axm : Set an axiom <string>\n";
-            std::cout << "-rul : Set a new rule <string>_<string>\n";
+            std::cout << "-gen  : Set a number of generations <integer>\n";
+            std::cout << "-len  : Set a line length <double>\n";
+            std::cout << "-rot  : Set a rotation angle <double>\n";
+            std::cout << "-axm  : Set an axiom <string>\n";
+            std::cout << "-rule : Set a new rule <string> -> <string>\n";
+            std::cout << "-file : Set LSystem from the file <filepath>" << std::endl;
             return true;
-        } else if (is_rul) {
-            is_rul = false;
+        } else if (is_rule) {
+            is_rule = false;
             auto it = str.begin();
 
             while ((it != str.end()) && (std::string_view(it, it + 2) != "->")) {
@@ -72,17 +77,20 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
             lineLength = std::stod(str);
         } else if (is_rot) {
             rotationAngle = std::stod(str);
+        } else if (is_file) {
+            ParseFile(str);
         } else {
             is_error = true;
         }
 
         // Cancel all flags: if user enters e.g. "-rot -rul X_FX+X-F",
         // there will be no uncertainty with the angle of rotation
-        is_rul = false;
+        is_rule = false;
         is_axm = false;
         is_gen = false;
         is_len = false;
         is_rot = false;
+        is_file = false;
 
         if (is_error) {
             throw std::invalid_argument("Argument " + str + " is not found!");

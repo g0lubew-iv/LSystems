@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(l_systems CXX)
+project(l_systems
+        VERSION 1.0.0
+        DESCRIPTION "Template for C++ library built with CMake"
+        LANGUAGES CXX)
+
+string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
+    is_top_level)
+option(L_SYSTEMS_DRAWER_INSTALL "Generate target for installing mylib" ${is_top_level})
 
 add_executable(l_system_drawer main.cpp)
 
@@ -80,3 +87,13 @@ add_custom_target(
 )
 
 add_dependencies(l_system_drawer copy_shaders)
+
+include(GNUInstallDirs)
+
+install(TARGETS l_system_drawer
+        CONFIGURATIONS Debug
+        RUNTIME PUBLIC_HEADER DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
+install(TARGETS l_system_drawer
+        CONFIGURATIONS Release
+        RUNTIME PUBLIC_HEADER DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
