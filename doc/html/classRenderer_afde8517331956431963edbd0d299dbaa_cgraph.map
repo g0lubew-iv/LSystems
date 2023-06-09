@@ -1,6 +1,0 @@
-<map id="Renderer::Runtime" name="Renderer::Runtime">
-<area shape="rect" id="node1" title="The main program loop." alt="" coords="5,57,149,85"/>
-<area shape="rect" id="node2" href="$classRenderer.html#aa0ca7d16baab2c8b22a38cf6be864c64" title="Event handling (keystrokes)" alt="" coords="203,5,324,33"/>
-<area shape="rect" id="node3" href="$classRenderer.html#af7e5f8f68742f198e315fb4683a605a4" title="Rendering." alt="" coords="198,57,329,85"/>
-<area shape="rect" id="node4" href="$classRenderer.html#a7622e76af4c3e147885fce483a49f859" title="Updating zoom and camera offset." alt="" coords="197,109,330,137"/>
-</map>

@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 project(l_systems CXX)
 
-# include(GNUInstallDirs)
-
 add_executable(l_system_drawer main.cpp)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
@@ -38,14 +36,36 @@ set_target_properties(
         PUBLIC_HEADER "${L_SYSTEMS_PUBLIC_HEADERS}"
 )
 
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+    # set input and output files
+    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.doxygen)
+
+    # request to configure the file
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+    message("Doxygen build started")
+
+    # note the option ALL which allows to build the docs together with the application
+    add_custom_target(doc_doxygen ALL
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
+else (DOXYGEN_FOUND)
+    message("Doxygen need to be installed to generate the doxygen documentation")
+endif (DOXYGEN_FOUND)
+
 find_package(OpenGL REQUIRED)
 target_link_libraries(l_system_drawer PUBLIC OpenGL::GL)
 
 find_package(glfw3 REQUIRED)
 target_link_libraries(l_system_drawer PUBLIC glfw)
 
+
 find_package(glad REQUIRED)
 target_link_libraries(l_system_drawer PUBLIC glad::glad)
+
 
 find_package(glm REQUIRED)
 target_link_libraries(l_system_drawer PUBLIC glm::glm)
@@ -60,5 +80,3 @@ add_custom_target(
 )
 
 add_dependencies(l_system_drawer copy_shaders)
-
-# add_subdirectory(tests)

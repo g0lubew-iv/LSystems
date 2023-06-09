@@ -1,4 +1,0 @@
-<map id="Drawer::move_node" name="Drawer::move_node">
-<area shape="rect" id="node1" title="Make a new Node, move to it and instructs Renderer to draw it directly with the top one." alt="" coords="5,5,158,33"/>
-<area shape="rect" id="node2" href="$classRenderer.html#a99f9db052b59ccb6b904791ff4ac0b92" title="Add new section (2 vectors, begin and end)" alt="" coords="206,5,346,33"/>
-</map>
