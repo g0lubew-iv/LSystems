@@ -31,8 +31,20 @@ Use this command:
 ```
 l_system_drawer -h
 ```
+A composition of configuration .txt file (connected by command ``` -file "<absolute_path>" ```):
 
-E.g. command as follows...
+```
+<number of generations>
+<length of line>
+<rotation angle (degrees)>
+<axiom>
+<rule 1>
+<rule 2>
+...
+<rule N>
+```
+
+Example 1. Command as follows...
 
 ```
 ./l_system_drawer -gen 7 -rot 22.5 -axm "F" -rul "F->FF-[XY]+[XY]" -rul "X->+FY" -rul "Y->-FX"
@@ -41,7 +53,7 @@ E.g. command as follows...
 
 ![plot](./example1.png)
 
-Another one:
+Example 2. Another one:
 
 ```
 ./l_system_drawer -gen 10 -rot 120 -axm "F+F+F" -rul "F->F-F+F"
@@ -49,10 +61,10 @@ Another one:
 
 ![plot](./example2.png)
 
-Or you can specify the absolute path to the configuration file:
+Example 3. You can specify the absolute path to the configuration file:
 
 ```
 ./l_system_drawer -file "<absolute path to file>"
 ```
 
-![plot](.example3.png)
+![plot](./example3.png)
