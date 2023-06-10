@@ -104,6 +104,11 @@ void Reader::ParseFile(const std::string &file_path) {
     std::string line;
     std::ifstream file(file_path);
 
+    if (!file.is_open()) {
+        // incorrect path or corrupted file
+        throw std::invalid_argument("Couldn't open file " + file_path + "!");
+    }
+
     file >> numGen;
     CheckNumGen();
 
