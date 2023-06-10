@@ -15,15 +15,18 @@ Rules definitions (according to Paul Bourke):
 
 <h3>Building</h3>
 Dependencies:
-1. GLFW
-2. Glad
-3. Glm
-4. Boost
+1. GLFW \newline
+2. Glad \newline
+3. Glm \newline
+4. Boost \newline
 
-Use this command:
+
 
 ```
-...
+mkdir build
+cd build
+cmake ..
+cmake --build . 
 ```
 
 <h3>Using</h3>
@@ -31,7 +34,19 @@ Use this command:
 ```
 l_system_drawer -h
 ```
-A composition of configuration .txt file (connected by command ``` -file "<absolute_path>" ```):
+
+Available command line keys:
+
+|  Key  | Meaning: format                                 |
+|------:|-------------------------------------------------|
+| -gen  | Set a number of generations: **integer**        |
+| -len  | Set a line length:           **double**         |
+| -rot  | Set a rotation angle:        **double**         |
+| -axm  | Set an axiom:                **string**         |
+| -rule | Set a new rule:              **string->string** |
+| -file | Set LSystem from the file:   **filepath**       |
+
+A composition of configuration .txt file (connected by command ``` -file <absolute_path> ```):
 
 ```
 <number of generations>
