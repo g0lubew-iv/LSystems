@@ -20,6 +20,12 @@ Dependencies:
 3. Glm
 4. Boost
 
+Use this command:
+
+```
+...
+```
+
 <h3>Using</h3>
 
 ```
@@ -42,3 +48,11 @@ Another one:
 ```
 
 ![plot](./example2.png)
+
+Or you can specify the absolute path to the configuration file:
+
+```
+./l_system_drawer -file "<absolute path to file>"
+```
+
+![plot](.example3.png)
