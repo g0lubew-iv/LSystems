@@ -26,7 +26,7 @@ Dependencies:<br>
 mkdir build
 cd build
 cmake ..
-cmake --build . 
+cmake --install . --config Release
 ```
 
 <h3>Using</h3>
