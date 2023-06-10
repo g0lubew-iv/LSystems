@@ -14,11 +14,11 @@ Rules definitions (according to Paul Bourke):
 |        \] | Pop current drawing state from the stack           |
 
 <h3>Building</h3>
-Dependencies:
-1. GLFW \newline
-2. Glad \newline
-3. Glm \newline
-4. Boost \newline
+Dependencies:<br>
+1. GLFW<br>
+2. Glad<br>
+3. Glm<br>
+4. Boost<br><br>
 
 
 
