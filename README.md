@@ -32,7 +32,7 @@ cmake --build .
 <h3>Using</h3>
 
 ```
-l_system_drawer -h
+./l_system_drawer -h
 ```
 
 Available command line keys:
