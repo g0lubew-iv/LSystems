@@ -62,7 +62,7 @@ A composition of configuration .txt file (connected by command ``` -file <absolu
 Example 1. Command as follows...
 
 ```
-./l_system_drawer -gen 7 -rot 22.5 -axm "F" -rul "F->FF-[XY]+[XY]" -rul "X->+FY" -rul "Y->-FX"
+./l_system_drawer -gen 7 -rot 22.5 -axm "F" -rule "F->FF-[XY]+[XY]" -rule "X->+FY" -rule "Y->-FX"
 ```
 ... will produce window with this plant:
 
@@ -71,7 +71,7 @@ Example 1. Command as follows...
 Example 2. Another one:
 
 ```
-./l_system_drawer -gen 10 -rot 120 -axm "F+F+F" -rul "F->F-F+F"
+./l_system_drawer -gen 10 -rot 120 -axm "F+F+F" -rule "F->F-F+F"
 ```
 
 ![plot](./example2.png)
