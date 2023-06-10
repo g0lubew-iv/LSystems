@@ -2,7 +2,7 @@
 
 Coursework. Mentor: Polevoy D. V.
 
-Rules definitions (according to Paul Bourke):
+Rules definitions (according to [Paul Bourke](http://www.paulbourke.net/fractals/lsys/)):
 
 | Character | Meaning                                            |
 |----------:|----------------------------------------------------|
@@ -14,11 +14,11 @@ Rules definitions (according to Paul Bourke):
 |        \] | Pop current drawing state from the stack           |
 
 <h3>Building</h3>
-Dependencies:<br>
-1. GLFW<br>
-2. Glad<br>
-3. Glm<br>
-4. Boost<br><br>
+Dependencies: <br>
+1. GLFW <br>
+2. GLAD <br>
+3. GLM <br>
+4. Boost <br><br>
 
 
 
@@ -83,3 +83,5 @@ Example 3. You can specify the absolute path to the configuration file:
 ```
 
 ![plot](./example3.png)
+
+The technical documentation will be generated using [Doxygen](https://github.com/doxygen/doxygen).
