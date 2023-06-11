@@ -1,7 +1,7 @@
-#include <lsystem/reader.hpp>
-#include <lsystem/lsystem.hpp>
-#include <lsystem/drawer.hpp>
-#include <lsystem/renderer.hpp>
+#include <l_system/reader.hpp>
+#include <l_system/l_system.hpp>
+#include <l_system/drawer.hpp>
+#include <l_system/renderer.hpp>
 
 int WIDTH = 500;
 int HEIGHT = 500;

@@ -2,7 +2,7 @@
 // Created by one_eyed_john on 07/06/23.
 //
 
-#include "lsystem/renderer.hpp"
+#include "l_system/renderer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

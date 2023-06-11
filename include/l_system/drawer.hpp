@@ -5,8 +5,8 @@
 #ifndef L_SYSTEMS_DRAWER_HPP
 #define L_SYSTEMS_DRAWER_HPP
 
-#include <lsystem/renderer.hpp>
-#include <lsystem/lsystem.hpp>
+#include <l_system/renderer.hpp>
+#include "l_system.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

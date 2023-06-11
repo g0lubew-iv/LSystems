@@ -2,7 +2,7 @@
 // Created by one_eyed_john on 24/05/23.
 //
 
-#include <lsystem/reader.hpp>
+#include <l_system/reader.hpp>
 
 #include <iostream>
 #include <fstream>

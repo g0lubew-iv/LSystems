@@ -2,8 +2,8 @@
 // Created by one_eyed_john on 26/04/23.
 //
 
-#ifndef L_SYSTEMS_LSYSTEM_HPP
-#define L_SYSTEMS_LSYSTEM_HPP
+#ifndef L_SYSTEMS_L_SYSTEM_HPP
+#define L_SYSTEMS_L_SYSTEM_HPP
 
 #include <string>
 #include <vector>
@@ -108,4 +108,4 @@ private:
     LSystem::rules_container &rules_;
 };
 
-#endif //L_SYSTEMS_LSYSTEM_HPP
+#endif //L_SYSTEMS_L_SYSTEM_HPP

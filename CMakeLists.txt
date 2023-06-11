@@ -8,15 +8,15 @@ project(l_systems
 add_executable(l_system_drawer main.cpp)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
-        include/lsystem/lsystem.hpp
-        include/lsystem/drawer.hpp
-        include/lsystem/renderer.hpp
-        include/lsystem/reader.hpp
+        include/l_system/l_system.hpp
+        include/l_system/drawer.hpp
+        include/l_system/renderer.hpp
+        include/l_system/reader.hpp
         )
 
 set(L_SYSTEMS_SOURCES
         ${L_SYSTEMS_PUBLIC_HEADERS}
-        src/lsystem.cpp
+        src/l_system.cpp
         src/drawer.cpp
         src/renderer.cpp
         src/reader.cpp
@@ -42,21 +42,25 @@ set_target_properties(
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
     # set input and output files
-    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
-    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.doxygen)
+    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
+    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
     # request to configure the file
-    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT})
     message("Doxygen build started")
 
     # note the option ALL which allows to build the docs together with the application
     add_custom_target(doc_doxygen ALL
             COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMENT "Generating API documentation with Doxygen"
-            VERBATIM)
+            COMMENT "Generate API documentation with Doxygen"
+            VERBATIM
+            )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin
+            )
 else (DOXYGEN_FOUND)
-    message("Doxygen need to be installed to generate the doxygen documentation")
+    message("Doxygen need to be installed to generate Doxygen documentation!")
 endif (DOXYGEN_FOUND)
 
 find_package(OpenGL REQUIRED)

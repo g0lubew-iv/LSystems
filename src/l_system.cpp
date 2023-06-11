@@ -2,7 +2,7 @@
 // Created by one_eyed_john on 26/04/23.
 //
 
-#include <lsystem/lsystem.hpp>
+#include <l_system/l_system.hpp>
 #include <utility>
 
 LSystem::LSystem(const std::string &axiom, rules_container map_rules, int number_generations)
