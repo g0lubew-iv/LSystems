@@ -9,6 +9,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+
+#include "stb_image.h"
+
+#define STBI_MSC_SECURE_CRT
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
+#include "stb_image_write.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -102,6 +111,9 @@ unsigned int make_program(
 }
 
 Renderer::Renderer(int width, int height) {
+
+    read_cash(); // information about the previous state of the program (number of images)
+
     window = create_window(width, height);
     program = make_program("vert.glsl", "frag.glsl");
 
@@ -128,6 +140,8 @@ Renderer::Renderer(int width, int height) {
 }
 
 Renderer::~Renderer() {
+    write_cash(); // the next state of program (number of pictures)
+
     glDeleteProgram(program);
     glDeleteVertexArrays(1, &vertex_array);
     glDeleteBuffers(1, &vertex_buffer);
@@ -209,6 +223,10 @@ void Renderer::input() {
         if (scale <= 0)
             scale = scale_speed;
     }
+    if (glfwGetKey(window, GLFW_KEY_Z)) {
+        take_screenshot(("output/screen" + std::to_string(picture_counter) + ".png").c_str());
+        picture_counter++;
+    }
 }
 
 void Renderer::update(double duration) {
@@ -217,4 +235,49 @@ void Renderer::update(double duration) {
     view = glm::scale(view, glm::vec3(scale_val, scale_val, 0));
     auto shift = glm::vec2(camera_shift) * static_cast<float>(duration) * camera_speed;
     view = glm::translate(view, glm::vec3(shift, 0));
+}
+
+void Renderer::take_screenshot(const char *filename) {
+    std::cout << "A screenshot has been taken! " <<
+              std::filesystem::absolute(static_cast<std::filesystem::path>(filename)).string() << "\n";
+
+    int width = 0;
+    int height = 0;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    GLsizei nrChannels = 3;
+    GLsizei stride = nrChannels * width;
+
+    stride += (stride % 4) ? (4 - stride % 4) : 0;
+    GLsizei bufferSize = stride * height;
+    std::vector<char> buffer(bufferSize);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+
+    stbi_flip_vertically_on_write(1);
+    stbi_write_png(filename, width, height, nrChannels, buffer.data(), stride);
+}
+
+void Renderer::read_cash() {
+    std::ifstream file("./output/cash.txt");
+
+    if (!file.is_open()) {
+        // incorrect path or corrupted file
+        return;
+    }
+
+    file >> picture_counter;
+}
+
+void Renderer::write_cash() const {
+    std::ofstream file("./output/cash.txt");
+
+    if (!file.is_open()) {
+        // incorrect path or corrupted file
+        return;
+    }
+
+    file << picture_counter;
 }

@@ -6,6 +6,8 @@
 #define L_SYSTEMS_RENDERER_HPP
 
 #include <vector>
+#include <string>
+
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -88,6 +90,25 @@ private:
      * \param duration Button press time
      */
     void update(double duration);
+
+    /**
+     * \brief Take a screenshot of the current part of GLFW window
+     * \param filename Name of a new screenshot
+     */
+    void take_screenshot(const char *filename);
+
+    /**
+     * \brief Read the previous number of images
+     */
+    void read_cash();
+
+    /**
+     * \brief Write the next number of images
+     */
+    void write_cash() const;
+
+    /// @brief Counter of number of screenshots
+    unsigned int picture_counter = 0;
 };
 
 

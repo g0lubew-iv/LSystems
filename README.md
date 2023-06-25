@@ -18,7 +18,8 @@ Dependencies: <br>
 1. GLFW <br>
 2. GLAD <br>
 3. GLM <br>
-4. Boost <br><br>
+4. Boost <br>
+5. Stb <br><br>
 
 
 
@@ -48,14 +49,15 @@ Available command line keys:
 
 Available keyboard keys:
 
-|  Key  |     Meaning      |
-|------:|------------------|
-| W     | Camera up        |
-| S     | Camera down      |
-| A     | Camera left      |
-| D     | Camera right     |
-| Q     | Camera zoom      |
-| E     | Camera move away |
+|  Key  |      Meaning      |
+|------:|-------------------|
+| W     | Camera up         |
+| S     | Camera down       |
+| A     | Camera left       |
+| D     | Camera right      |
+| Q     | Camera zoom       |
+| E     | Camera move away  |
+| Z     | Take a screenshot |
 
 A composition of configuration .txt file (connected by command ``` -file <absolute_path> ```):
 
