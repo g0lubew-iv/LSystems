@@ -75,6 +75,7 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
             CheckNumGen(); // is non-negative
         } else if (is_len) {
             lineLength = std::stod(str);
+            CheckLineLength(); // is positive
         } else if (is_rot) {
             rotationAngle = std::stod(str);
         } else if (is_file) {

@@ -47,6 +47,15 @@ struct Reader {
     }
 
     /**
+     * \brief Checking if lineLength is positive (> 0)
+     */
+    void CheckLineLength() const {
+        if (lineLength <= 0)
+            // Check if number of generations is non-negative, then cast to unsigned int
+            throw std::invalid_argument("Length of the lines must be positive!");
+    }
+
+    /**
      * \brief Reading and editing data based on command line arguments;
      * syntax of rules: Variable->Rule
      * \return Program termination signal
