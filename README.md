@@ -46,6 +46,17 @@ Available command line keys:
 | -rule | Set a new rule:              **string->string** |
 | -file | Set LSystem from the file:   **filepath**       |
 
+Available keyboard keys:
+
+|  Key  |     Meaning      |
+|------:|------------------|
+| W     | Camera up        |
+| S     | Camera down      |
+| A     | Camera left      |
+| D     | Camera right     |
+| Q     | Camera zoom      |
+| E     | Camera move away |
+
 A composition of configuration .txt file (connected by command ``` -file <absolute_path> ```):
 
 ```
