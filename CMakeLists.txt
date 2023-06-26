@@ -9,7 +9,7 @@ include(GNUInstallDirs)
 
 add_executable(l_system_drawer main.cpp)
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
+# set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
         include/l_system/l_system.hpp
@@ -61,7 +61,7 @@ if (DOXYGEN_FOUND)
             VERBATIM
             )
 else (DOXYGEN_FOUND)
-    message("Doxygen need to be installed to generate Doxygen documentation!")
+    message("Doxygen wasn't found!")
 endif (DOXYGEN_FOUND)
 
 find_package(OpenGL REQUIRED)
@@ -88,47 +88,20 @@ find_package(Stb REQUIRED)
 include_directories(${Stb_INCLUDE_DIR})
 target_include_directories(l_system_drawer PUBLIC ${Stb_INCLUDE_DIR})
 
-if (WIN32)
 
-    set(OpenGL_RUNTIME_PATH "${OpenGL_DIR}/../../bin")
-    set(glfw_RUNTIME_PATH "${glfw_DIR}/../../bin")
-    set(glad_RUNTIME_PATH "${glad_DIR}/../../bin")
-    set(glm_RUNTIME_PATH "${glm_DIR}/../../bin")
-    set(Boost_RUNTIME_PATH "${Boost_DIR}/../../bin")
-    set(Stb_RUNTIME_PATH "${Stb_DIR}/../../bin")
+install(
+        TARGETS l_system_drawer
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        PUBLIC_HEADER DESTINATION include
+)
+install(
+        TARGETS l_system_drawer
+        RUNTIME_DEPENDENCIES
+        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+        POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
 
-    install(DIRECTORY "${OpenGL_RUNTIME_PATH}/"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            )
-    message("OpenGL installed: ${OpenGL_RUNTIME_PATH}")
-
-    install(DIRECTORY "${glfw_RUNTIME_PATH}/"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            )
-    message("GLFW installed: ${glfw_RUNTIME_PATH}")
-
-    install(DIRECTORY "${glad_RUNTIME_PATH}/"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            )
-    message("Glad installed: ${glad_RUNTIME_PATH}")
-
-    install(DIRECTORY "${glm_RUNTIME_PATH}/"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            )
-    message("GLM installed: ${glm_RUNTIME_PATH}")
-
-    install(DIRECTORY "${Boost_RUNTIME_PATH}/"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            )
-    message("Boost installed: ${Boost_RUNTIME_PATH}")
-
-    install(DIRECTORY "${Stb_RUNTIME_PATH}/"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            )
-    message("Stb installed: ${Stb_RUNTIME_PATH}")
-endif ()
-
-install(TARGETS l_system_drawer DESTINATION ${CMAKE_INSTALL_PREFIX} PUBLIC_HEADER DESTINATION include)
+)
 install(FILES test.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY shaders DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY screenshots DESTINATION ${CMAKE_INSTALL_PREFIX})
