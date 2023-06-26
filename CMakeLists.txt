@@ -5,7 +5,11 @@ project(l_systems
         DESCRIPTION "LSystems and OpenGL"
         LANGUAGES CXX)
 
+include(GNUInstallDirs)
+
 add_executable(l_system_drawer main.cpp)
+
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
         include/l_system/l_system.hpp
@@ -56,40 +60,70 @@ if (DOXYGEN_FOUND)
             COMMENT "Generate API documentation with Doxygen"
             VERBATIM
             )
-    install(FILES ${CMAKE_INSTALL_PREFIX}/Doxyfile
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            )
 else (DOXYGEN_FOUND)
     message("Doxygen need to be installed to generate Doxygen documentation!")
 endif (DOXYGEN_FOUND)
 
 find_package(OpenGL REQUIRED)
+include_directories(${OpenGL_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC OpenGL::GL)
 
 find_package(glfw3 REQUIRED)
+include_directories(${glfw_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC glfw)
 
 find_package(glad REQUIRED)
+include_directories(${glad_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC glad::glad)
 
 find_package(glm REQUIRED)
+include_directories(${glm_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC glm::glm)
 
 find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC Boost::boost)
 
 find_package(Stb REQUIRED)
+include_directories(${Stb_INCLUDE_DIR})
 target_include_directories(l_system_drawer PUBLIC ${Stb_INCLUDE_DIR})
 
-add_custom_target(
-        copy_shaders
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/shaders
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_INSTALL_PREFIX}/shaders
-)
+if (WIN32)
+    set(OpenGL_RUNTIME_PATH "${OpenGL_DIR}/../../bin")
+    set(glfw_RUNTIME_PATH "${glfw_DIR}/../../bin")
+    set(glad_RUNTIME_PATH "${glad_DIR}/../../bin")
+    set(glm_RUNTIME_PATH "${glm_DIR}/../../bin")
+    set(Boost_RUNTIME_PATH "${Boost_DIR}/../../bin")
+    set(Stb_RUNTIME_PATH "${Stb_DIR}/../../bin")
+else ()
+    set(OpenGL_RUNTIME_PATH "${OpenGL_DIR}/../../lib")
+    set(glfw_RUNTIME_PATH "${glfw_DIR}/../../bin")
+    set(glad_RUNTIME_PATH "${glad_DIR}/../../bin")
+    set(glm_RUNTIME_PATH "${glm_DIR}/../../bin")
+    set(Boost_RUNTIME_PATH "${Boost_DIR}/../../bin")
+    set(Stb_RUNTIME_PATH "${Stb_DIR}/../../bin")
+endif ()
 
-add_dependencies(l_system_drawer copy_shaders)
+install(DIRECTORY "${OpenGL_RUNTIME_PATH}/"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        )
+install(DIRECTORY "${glfw_RUNTIME_PATH}/"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        )
+install(DIRECTORY "${glad_RUNTIME_PATH}/"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        )
+install(DIRECTORY "${glm_RUNTIME_PATH}/"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        )
+install(DIRECTORY "${Boost_RUNTIME_PATH}/"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        )
+install(DIRECTORY "${Stb_RUNTIME_PATH}/"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        )
 
-install(TARGETS l_system_drawer DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(TARGETS l_system_drawer PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(FILES test.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY shaders DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY output DESTINATION ${CMAKE_INSTALL_PREFIX})
