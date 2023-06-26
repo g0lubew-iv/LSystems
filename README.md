@@ -79,7 +79,7 @@ Example 1. Command as follows...
 ```
 ... will produce window with this plant:
 
-![plot](./screenshot/example1.png)
+![plot](./screenshots/example1.png)
 
 Example 2. Another one:
 
@@ -87,7 +87,7 @@ Example 2. Another one:
 ./l_system_drawer -gen 10 -rot 120 -axm "F+F+F" -rule "F->F-F+F"
 ```
 
-![plot](./screenshot/example2.png)
+![plot](./screenshots/example2.png)
 
 Example 3. You can specify the absolute path to the configuration file:
 
@@ -95,7 +95,7 @@ Example 3. You can specify the absolute path to the configuration file:
 ./l_system_drawer -file "<absolute path to file>"
 ```
 
-![plot](./screenshot/example3.png)
+![plot](./screenshots/example3.png)
 
 <h2>Documentation</h2>
 
