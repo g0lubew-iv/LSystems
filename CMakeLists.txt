@@ -9,7 +9,7 @@ include(GNUInstallDirs)
 
 add_executable(l_system_drawer main.cpp)
 
-# set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
         include/l_system/l_system.hpp
@@ -94,14 +94,16 @@ install(
         DESTINATION ${CMAKE_INSTALL_PREFIX}
         PUBLIC_HEADER DESTINATION include
 )
-install(
-        TARGETS l_system_drawer
-        RUNTIME_DEPENDENCIES
-        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
-        POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-
-)
+if (win32)
+    install(
+            TARGETS l_system_drawer
+            RUNTIME_DEPENDENCIES
+            PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+            POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+            PATTERN "*.hpp" EXCLUDE
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+    )
+endif ()
 install(FILES test.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY shaders DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY screenshots DESTINATION ${CMAKE_INSTALL_PREFIX})

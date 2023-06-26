@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <chrono>
+
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
@@ -111,9 +113,6 @@ unsigned int make_program(
 }
 
 Renderer::Renderer(int width, int height) {
-
-    read_cash(); // information about the previous state of the program (number of images)
-
     window = create_window(width, height);
     program = make_program("vert.glsl", "frag.glsl");
 
@@ -140,8 +139,6 @@ Renderer::Renderer(int width, int height) {
 }
 
 Renderer::~Renderer() {
-    write_cash(); // the next state of program (number of pictures)
-
     glDeleteProgram(program);
     glDeleteVertexArrays(1, &vertex_array);
     glDeleteBuffers(1, &vertex_buffer);
@@ -224,8 +221,8 @@ void Renderer::input() {
             scale = scale_speed;
     }
     if (glfwGetKey(window, GLFW_KEY_Z)) {
-        take_screenshot(("screenshots/screen" + std::to_string(picture_counter) + ".png").c_str());
-        picture_counter++;
+        take_screenshot(("screenshots/screen" +
+        std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".png").c_str());
     }
 }
 
@@ -258,26 +255,4 @@ void Renderer::take_screenshot(const char *filename) {
 
     stbi_flip_vertically_on_write(1);
     stbi_write_png(filename, width, height, nrChannels, buffer.data(), stride);
-}
-
-void Renderer::read_cash() {
-    std::ifstream file("./screenshots/cash.txt");
-
-    if (!file.is_open()) {
-        // incorrect path or corrupted file
-        return;
-    }
-
-    file >> picture_counter;
-}
-
-void Renderer::write_cash() const {
-    std::ofstream file("./screenshots/cash.txt");
-
-    if (!file.is_open()) {
-        // incorrect path or corrupted file
-        return;
-    }
-
-    file << picture_counter;
 }

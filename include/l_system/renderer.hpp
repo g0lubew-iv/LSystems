@@ -96,19 +96,6 @@ private:
      * \param filename Name of a new screenshot
      */
     void take_screenshot(const char *filename);
-
-    /**
-     * \brief Read the previous number of images
-     */
-    void read_cash();
-
-    /**
-     * \brief Write the next number of images
-     */
-    void write_cash() const;
-
-    /// @brief Counter of number of screenshots
-    unsigned int picture_counter = 0;
 };
 
 
