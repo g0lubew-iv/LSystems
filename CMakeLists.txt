@@ -1,15 +1,15 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.14)
 
-project(l_systems
+project(
+        l_systems
         VERSION 1.0.0
         DESCRIPTION "LSystems and OpenGL"
-        LANGUAGES CXX)
+        LANGUAGES CXX
+)
 
 include(GNUInstallDirs)
 
 add_executable(l_system_drawer main.cpp)
-
-# set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
         include/l_system/l_system.hpp
@@ -28,13 +28,14 @@ set(L_SYSTEMS_SOURCES
 
 target_sources(l_system_drawer PRIVATE ${L_SYSTEMS_SOURCES})
 
-target_include_directories(l_system_drawer
+target_include_directories(
+        l_system_drawer
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
-        )
+)
 
 target_compile_features(l_system_drawer PUBLIC cxx_std_20)
 
@@ -46,63 +47,56 @@ set_target_properties(
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
     # set input and screenshots files
+    set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc)
     set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
-    set(DOXYGEN_OUT ${CMAKE_INSTALL_PREFIX}/Doxyfile)
+    set(DOXYGEN_OUT ${DOXYGEN_OUTPUT_DIR}/Doxyfile)
 
     # request to configure the file
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT})
     message("Doxygen build started")
 
     # note the option ALL which allows to build the docs together with the application
-    add_custom_target(
-            doc_doxygen ALL
+    add_custom_target(doc_doxygen ALL
             COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
+            WORKING_DIRECTORY ${DOXYGEN_OUTPUT_DIR}
             COMMENT "Generate API documentation with Doxygen"
             VERBATIM
-    )
+            )
+    install(DIRECTORY ${DOXYGEN_OUTPUT_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
 else (DOXYGEN_FOUND)
     message("Doxygen wasn't found!")
 endif (DOXYGEN_FOUND)
 
 find_package(OpenGL REQUIRED)
-include_directories(${OpenGL_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC OpenGL::GL)
 
 find_package(glfw3 REQUIRED)
-include_directories(${glfw_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC glfw)
 
 find_package(glad REQUIRED)
-include_directories(${glad_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC glad::glad)
 
 find_package(glm REQUIRED)
-include_directories(${glm_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC glm::glm)
 
 find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
 target_link_libraries(l_system_drawer PUBLIC Boost::boost)
 
 find_package(Stb REQUIRED)
-include_directories(${Stb_INCLUDE_DIR})
 target_include_directories(l_system_drawer PUBLIC ${Stb_INCLUDE_DIR})
 
 install(
         TARGETS l_system_drawer
         DESTINATION ${CMAKE_INSTALL_PREFIX}
-        PUBLIC_HEADER DESTINATION include
+        PUBLIC_HEADER DESTINATION include/
 )
-if (win32)
-    install(
-            TARGETS l_system_drawer
-            RUNTIME_DEPENDENCIES
-            PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-" "C:/msys64/mingw64/bin.*" ".*/msys64/mingw64/bin.*"
-            POST_EXCLUDE_REGEXES ".*system32/.*\\.dll" ".*/msys64/mingw64/bin.*" ".*hpp"
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-    )
-endif ()
+install(
+        TARGETS l_system_drawer
+        RUNTIME_DEPENDENCIES
+        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+        POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
 install(FILES test.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY shaders DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY screenshots DESTINATION ${CMAKE_INSTALL_PREFIX})
