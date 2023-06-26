@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.21)
 
 project(l_systems
         VERSION 1.0.0
@@ -9,7 +9,7 @@ include(GNUInstallDirs)
 
 add_executable(l_system_drawer main.cpp)
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
+# set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
         include/l_system/l_system.hpp
@@ -54,12 +54,13 @@ if (DOXYGEN_FOUND)
     message("Doxygen build started")
 
     # note the option ALL which allows to build the docs together with the application
-    add_custom_target(doc_doxygen ALL
+    add_custom_target(
+            doc_doxygen ALL
             COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
             WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
             COMMENT "Generate API documentation with Doxygen"
             VERBATIM
-            )
+    )
 else (DOXYGEN_FOUND)
     message("Doxygen wasn't found!")
 endif (DOXYGEN_FOUND)
@@ -88,7 +89,6 @@ find_package(Stb REQUIRED)
 include_directories(${Stb_INCLUDE_DIR})
 target_include_directories(l_system_drawer PUBLIC ${Stb_INCLUDE_DIR})
 
-
 install(
         TARGETS l_system_drawer
         DESTINATION ${CMAKE_INSTALL_PREFIX}
@@ -98,9 +98,8 @@ if (win32)
     install(
             TARGETS l_system_drawer
             RUNTIME_DEPENDENCIES
-            PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
-            POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
-            PATTERN "*.hpp" EXCLUDE
+            PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-" "C:/msys64/mingw64/bin.*" ".*/msys64/mingw64/bin.*"
+            POST_EXCLUDE_REGEXES ".*system32/.*\\.dll" ".*/msys64/mingw64/bin.*" ".*hpp"
             DESTINATION ${CMAKE_INSTALL_PREFIX}
     )
 endif ()
