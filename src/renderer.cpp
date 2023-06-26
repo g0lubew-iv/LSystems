@@ -224,7 +224,7 @@ void Renderer::input() {
             scale = scale_speed;
     }
     if (glfwGetKey(window, GLFW_KEY_Z)) {
-        take_screenshot(("output/screen" + std::to_string(picture_counter) + ".png").c_str());
+        take_screenshot(("screenshots/screen" + std::to_string(picture_counter) + ".png").c_str());
         picture_counter++;
     }
 }
@@ -261,7 +261,7 @@ void Renderer::take_screenshot(const char *filename) {
 }
 
 void Renderer::read_cash() {
-    std::ifstream file("./output/cash.txt");
+    std::ifstream file("./screenshots/cash.txt");
 
     if (!file.is_open()) {
         // incorrect path or corrupted file
@@ -272,7 +272,7 @@ void Renderer::read_cash() {
 }
 
 void Renderer::write_cash() const {
-    std::ofstream file("./output/cash.txt");
+    std::ofstream file("./screenshots/cash.txt");
 
     if (!file.is_open()) {
         // incorrect path or corrupted file

@@ -45,7 +45,7 @@ set_target_properties(
 
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
-    # set input and output files
+    # set input and screenshots files
     set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
     set(DOXYGEN_OUT ${CMAKE_INSTALL_PREFIX}/Doxyfile)
 
@@ -89,45 +89,46 @@ include_directories(${Stb_INCLUDE_DIR})
 target_include_directories(l_system_drawer PUBLIC ${Stb_INCLUDE_DIR})
 
 if (WIN32)
+
     set(OpenGL_RUNTIME_PATH "${OpenGL_DIR}/../../bin")
     set(glfw_RUNTIME_PATH "${glfw_DIR}/../../bin")
     set(glad_RUNTIME_PATH "${glad_DIR}/../../bin")
     set(glm_RUNTIME_PATH "${glm_DIR}/../../bin")
     set(Boost_RUNTIME_PATH "${Boost_DIR}/../../bin")
     set(Stb_RUNTIME_PATH "${Stb_DIR}/../../bin")
-else ()
-    set(OpenGL_RUNTIME_PATH "${OpenGL_DIR}/../../lib")
-    set(glfw_RUNTIME_PATH "${glfw_DIR}/../../bin")
-    set(glad_RUNTIME_PATH "${glad_DIR}/../../bin")
-    set(glm_RUNTIME_PATH "${glm_DIR}/../../bin")
-    set(Boost_RUNTIME_PATH "${Boost_DIR}/../../bin")
-    set(Stb_RUNTIME_PATH "${Stb_DIR}/../../bin")
+
+    install(DIRECTORY "${OpenGL_RUNTIME_PATH}/"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            )
+    message("OpenGL installed: ${OpenGL_RUNTIME_PATH}")
+
+    install(DIRECTORY "${glfw_RUNTIME_PATH}/"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            )
+    message("GLFW installed: ${glfw_RUNTIME_PATH}")
+
+    install(DIRECTORY "${glad_RUNTIME_PATH}/"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            )
+    message("Glad installed: ${glad_RUNTIME_PATH}")
+
+    install(DIRECTORY "${glm_RUNTIME_PATH}/"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            )
+    message("GLM installed: ${glm_RUNTIME_PATH}")
+
+    install(DIRECTORY "${Boost_RUNTIME_PATH}/"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            )
+    message("Boost installed: ${Boost_RUNTIME_PATH}")
+
+    install(DIRECTORY "${Stb_RUNTIME_PATH}/"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            )
+    message("Stb installed: ${Stb_RUNTIME_PATH}")
 endif ()
 
-install(DIRECTORY "${OpenGL_RUNTIME_PATH}/"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        )
-install(DIRECTORY "${glfw_RUNTIME_PATH}/"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        )
-install(DIRECTORY "${glad_RUNTIME_PATH}/"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        )
-install(DIRECTORY "${glm_RUNTIME_PATH}/"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        )
-install(DIRECTORY "${Boost_RUNTIME_PATH}/"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        )
-install(DIRECTORY "${Stb_RUNTIME_PATH}/"
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        )
-
-install(
-        TARGETS l_system_drawer DESTINATION ${CMAKE_INSTALL_PREFIX}
-        PUBLIC_HEADER DESTINATION include
-)
-
+install(TARGETS l_system_drawer DESTINATION ${CMAKE_INSTALL_PREFIX} PUBLIC_HEADER DESTINATION include)
 install(FILES test.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY shaders DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(DIRECTORY output DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(DIRECTORY screenshots DESTINATION ${CMAKE_INSTALL_PREFIX})
