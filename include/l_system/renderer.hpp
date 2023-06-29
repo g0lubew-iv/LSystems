@@ -23,7 +23,7 @@ public:
      * \param width Width of window
      * \param height Height of window
      */
-    explicit Renderer(int width = 800, int height = 800);
+    explicit Renderer(int width = 800, int height = 800, const std::string& filepath_to_save="");
 
     /// @brief Class destructor: deleting program, buffers, terminate GLFW process
     ~Renderer();
@@ -78,6 +78,9 @@ private:
     /// @brief Zoom factor: default unit, of course
     float scale = 1;
     float scale_speed = 0.000005;
+
+    /// @brief File where screenshots will be saved
+    std::string save_file;
 
     /// @brief Rendering
     void render();

@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     auto l_system = LSystem(reader.axiom, reader.rules, reader.numGen);
     auto drawer = Drawer(l_system.GetString(), reader.lineLength, reader.rotationAngle);
-    auto renderer = Renderer();
+    auto renderer = Renderer(800, 800, reader.save_file);
     drawer.Draw(renderer);
     renderer.UpdateData();
 

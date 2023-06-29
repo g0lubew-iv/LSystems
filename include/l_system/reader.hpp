@@ -24,6 +24,9 @@ struct Reader {
     /// @brief An axiom of LSystem
     std::string axiom;
 
+    /// @brief File where screenshots will be saved
+    std::string save_file;
+
     /// @brief A number of generations; default it is 0, axiom
     int numGen = 0;
 

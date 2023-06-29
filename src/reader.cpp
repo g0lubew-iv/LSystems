@@ -19,6 +19,7 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
     bool is_len = false;
     bool is_rot = false;
     bool is_file = false;
+    bool is_save = false;
 
     // the first argument (argv[0]) is executable filename!
     for (int i = 1; i < argc; i++) {
@@ -30,6 +31,9 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
             continue;
         } else if (str == "-file") {
             is_file = true;
+            continue;
+        } else if (str == "-save") {
+            is_save = true;
             continue;
         } else if (str == "-axm") {
             is_axm = true;
@@ -49,6 +53,7 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
             std::cout << "-rot  : Set a rotation angle <double>\n";
             std::cout << "-axm  : Set an axiom <string>\n";
             std::cout << "-rule : Set a new rule <string> -> <string>\n";
+            std::cout << "-save : Set filename where screenshots will be saved <filepath>\n";
             std::cout << "-file : Set LSystem from the file <filepath>" << std::endl;
             return true;
         } else if (is_rule) {
@@ -68,6 +73,8 @@ bool Reader::ParseCommandLine(int argc, char *argv[]) {
             }
 
             rules[std::string(str.begin(), it)] = std::string_view(it + 2, str.end());
+        } else if (is_save) {
+            save_file = str;
         } else if (is_axm) {
             axiom = str;
         } else if (is_gen) {

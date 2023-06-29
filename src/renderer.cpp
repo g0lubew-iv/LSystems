@@ -112,7 +112,7 @@ unsigned int make_program(
     return program;
 }
 
-Renderer::Renderer(int width, int height) {
+Renderer::Renderer(int width, int height, const std::string &filepath_to_save) {
     window = create_window(width, height);
     program = make_program("vert.glsl", "frag.glsl");
 
@@ -136,6 +136,9 @@ Renderer::Renderer(int width, int height) {
     glEnableVertexArrayAttrib(vertex_array, 0);
     glVertexArrayAttribFormat(vertex_array, 0, 2, GL_FLOAT, false, 0);
     glVertexArrayAttribBinding(vertex_array, 0, 0);
+
+    save_file = filepath_to_save;
+
 }
 
 Renderer::~Renderer() {
@@ -221,8 +224,14 @@ void Renderer::input() {
             scale = scale_speed;
     }
     if (glfwGetKey(window, GLFW_KEY_Z)) {
-        take_screenshot(("screenshots/screen" +
-        std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".png").c_str());
+        if (!save_file.empty()) {
+            take_screenshot(save_file.c_str());
+        }
+        else {
+            take_screenshot(("screenshots/screen" +
+                             std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) +
+                             ".png").c_str());
+        }
     }
 }
 

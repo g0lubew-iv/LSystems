@@ -46,6 +46,7 @@ Available command line keys:
 | -axm  | Set an axiom:                **string**         |
 | -rule | Set a new rule:              **string->string** |
 | -file | Set LSystem from the file:   **filepath**       |
+| -save | Set file to save screens:    **filepath**       |
 
 Available keyboard keys:
 
