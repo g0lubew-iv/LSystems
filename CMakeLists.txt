@@ -44,6 +44,16 @@ set_target_properties(
         PUBLIC_HEADER "${L_SYSTEMS_PUBLIC_HEADERS}"
 )
 
+add_custom_target(
+        copy_shaders_make_dirs
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/shaders
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/shaders
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/screenshots
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/test.txt ${CMAKE_CURRENT_BINARY_DIR}/test.txt
+)
+
+add_dependencies(l_system_drawer copy_shaders_make_dirs)
+
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
     # set input and screenshots files
