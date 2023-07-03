@@ -7,7 +7,14 @@ project(
         LANGUAGES CXX
 )
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+include(build_prefix)
 include(GNUInstallDirs)
+
+# set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 add_executable(l_system_drawer main.cpp)
 
@@ -80,11 +87,11 @@ endif (DOXYGEN_FOUND)
 find_package(OpenGL REQUIRED)
 target_link_libraries(l_system_drawer PUBLIC OpenGL::GL)
 
-find_package(glfw3 REQUIRED)
-target_link_libraries(l_system_drawer PUBLIC glfw)
-
 find_package(glad REQUIRED)
 target_link_libraries(l_system_drawer PUBLIC glad::glad)
+
+find_package(glfw3 REQUIRED)
+target_link_libraries(l_system_drawer PUBLIC glfw)
 
 find_package(glm REQUIRED)
 target_link_libraries(l_system_drawer PUBLIC glm::glm)
@@ -95,18 +102,35 @@ target_link_libraries(l_system_drawer PUBLIC Boost::boost)
 find_package(Stb REQUIRED)
 target_include_directories(l_system_drawer PUBLIC ${Stb_INCLUDE_DIR})
 
+if (WIN32)
 install(
         TARGETS l_system_drawer
         DESTINATION ${CMAKE_INSTALL_PREFIX}
         PUBLIC_HEADER DESTINATION include/
 )
-install(
-        TARGETS l_system_drawer
-        RUNTIME_DEPENDENCIES
-        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
-        POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+
+install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/
         DESTINATION ${CMAKE_INSTALL_PREFIX}
+        COMPONENT Runtime
+        FILES_MATCHING PATTERN "*.dll"
 )
+install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        COMPONENT Runtime
+        FILES_MATCHING PATTERN "*.dll"
+)
+install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        COMPONENT Runtime
+        FILES_MATCHING PATTERN "*.dll"
+)
+install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+        COMPONENT Runtime
+        FILES_MATCHING PATTERN "*.dll"
+)
+endif()
+
 install(FILES test.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY shaders DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY screenshots DESTINATION ${CMAKE_INSTALL_PREFIX})
