@@ -9,8 +9,6 @@ project(
 
 include(GNUInstallDirs)
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/bin)
-
 add_executable(l_system_drawer main.cpp)
 
 set(L_SYSTEMS_PUBLIC_HEADERS
