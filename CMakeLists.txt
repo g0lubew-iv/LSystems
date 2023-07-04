@@ -7,14 +7,9 @@ project(
         LANGUAGES CXX
 )
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-include(build_prefix)
 include(GNUInstallDirs)
 
-# set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bin)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(l_system_drawer main.cpp)
 
@@ -38,10 +33,10 @@ target_sources(l_system_drawer PRIVATE ${L_SYSTEMS_SOURCES})
 target_include_directories(
         l_system_drawer
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+        "${CMAKE_SOURCE_DIR}/src"
 )
 
 target_compile_features(l_system_drawer PUBLIC cxx_std_20)
@@ -51,22 +46,34 @@ set_target_properties(
         PUBLIC_HEADER "${L_SYSTEMS_PUBLIC_HEADERS}"
 )
 
-add_custom_target(
-        copy_shaders_make_dirs
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/shaders
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_CURRENT_BINARY_DIR}/shaders
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/screenshots
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/test.txt ${CMAKE_CURRENT_BINARY_DIR}/test.txt
-)
+if (WIN32)
+    add_custom_target(
+            copy_shaders_make_dirs
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/shaders
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shaders ${CMAKE_BINARY_DIR}/shaders
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/screenshots
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/test.txt ${CMAKE_BINARY_DIR}/test.txt
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Release/shaders
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shaders ${CMAKE_BINARY_DIR}/Release/shaders
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Release/screenshots
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/test.txt ${CMAKE_BINARY_DIR}/Release/test.txt
+    )
+else ()
+    add_custom_target(
+            copy_shaders_make_dirs
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/shaders
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shaders ${CMAKE_BINARY_DIR}/shaders
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/screenshots
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/test.txt ${CMAKE_BINARY_DIR}/test.txt
+    )
+endif ()
 
 add_dependencies(l_system_drawer copy_shaders_make_dirs)
 
-find_package(Doxygen)
+find_package(Doxygen REQUIRED dot)
 if (DOXYGEN_FOUND)
-    # set input and screenshots files
-    set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc)
-    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
-    set(DOXYGEN_OUT ${DOXYGEN_OUTPUT_DIR}/Doxyfile)
+    set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/docs/Doxyfile)
+    set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
 
     # request to configure the file
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT})
@@ -75,11 +82,11 @@ if (DOXYGEN_FOUND)
     # note the option ALL which allows to build the docs together with the application
     add_custom_target(doc_doxygen ALL
             COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-            WORKING_DIRECTORY ${DOXYGEN_OUTPUT_DIR}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMENT "Generate API documentation with Doxygen"
             VERBATIM
             )
-    install(DIRECTORY ${DOXYGEN_OUTPUT_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/l_systems_docs DESTINATION ${CMAKE_INSTALL_PREFIX})
 else (DOXYGEN_FOUND)
     message("Doxygen wasn't found!")
 endif (DOXYGEN_FOUND)
@@ -103,33 +110,21 @@ find_package(Stb REQUIRED)
 target_include_directories(l_system_drawer PUBLIC ${Stb_INCLUDE_DIR})
 
 if (WIN32)
-install(
-        TARGETS l_system_drawer
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        PUBLIC_HEADER DESTINATION include/
-)
-
-install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        COMPONENT Runtime
-        FILES_MATCHING PATTERN "*.dll"
-)
-install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        COMPONENT Runtime
-        FILES_MATCHING PATTERN "*.dll"
-)
-install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}/
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        COMPONENT Runtime
-        FILES_MATCHING PATTERN "*.dll"
-)
-install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}/
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        COMPONENT Runtime
-        FILES_MATCHING PATTERN "*.dll"
-)
-endif()
+    install(
+            TARGETS l_system_drawer
+            RUNTIME_DEPENDENCIES
+            PRE_EXCLUDE_REGEXES
+            "api-ms-" "ext-ms-"
+            POST_EXCLUDE_REGEXES
+            ".*system32/.*\\.dll"
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+    )
+else ()
+    install(
+            TARGETS l_system_drawer
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+    )
+endif ()
 
 install(FILES test.txt DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY shaders DESTINATION ${CMAKE_INSTALL_PREFIX})
