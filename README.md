@@ -104,7 +104,7 @@ Technical documentation is [here](https://drive.google.com/file/d/1A3JmN9AcxBZrI
 You can create documentation yourself, here is a list of possible commands (from install directory <b>bin</b>):
 ```
 doxywizard Doxyfile
-cd doc/latex
+cd l_systems_docs/latex
 pdflatex refman.tex
 ```
 After these actions, you will have a file <b>```refman.pdf```</b> in this directory.

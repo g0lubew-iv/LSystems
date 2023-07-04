@@ -73,11 +73,11 @@ private:
 
     /// @brief Camera offset: needed to move across the canvas
     glm::ivec2 camera_shift = {0, 0};
-    float camera_speed = 0.05;
+    float camera_speed = 0.05f;
 
     /// @brief Zoom factor: default unit, of course
-    float scale = 1;
-    float scale_speed = 0.000005;
+    float scale = 1.f;
+    float scale_speed = 0.000005f;
 
     /// @brief File where screenshots will be saved
     std::string save_file;
